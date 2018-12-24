@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdkj.dispatch.dao.driverInfo.DriverInfoMapper">
+  <resultMap id="BaseResultMap" type="com.sdkj.dispatch.domain.po.DriverInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="id_card_no" jdbcType="VARCHAR" property="idCardNo" />
+    <result column="id_card_type" jdbcType="INTEGER" property="idCardType" />
+    <result column="driving_license_no" jdbcType="VARCHAR" property="drivingLicenseNo" />
+    <result column="driving_license_file_no" jdbcType="VARCHAR" property="drivingLicenseFileNo" />
+    <result column="driving_license_type" jdbcType="VARCHAR" property="drivingLicenseType" />
+    <result column="driving_license_image" jdbcType="VARCHAR" property="drivingLicenseImage" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, id_card_no, id_card_type, driving_license_no, driving_license_file_no, 
+    driving_license_type, driving_license_image
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sdlh_driver_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from sdlh_driver_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.sdkj.dispatch.domain.po.DriverInfo">
+    insert into sdlh_driver_info (id, user_id, id_card_no, 
+      id_card_type, driving_license_no, driving_license_file_no, 
+      driving_license_type, driving_license_image
+      )
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{idCardNo,jdbcType=VARCHAR}, 
+      #{idCardType,jdbcType=INTEGER}, #{drivingLicenseNo,jdbcType=VARCHAR}, #{drivingLicenseFileNo,jdbcType=VARCHAR}, 
+      #{drivingLicenseType,jdbcType=VARCHAR}, #{drivingLicenseImage,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.sdkj.dispatch.domain.po.DriverInfo">
+    insert into sdlh_driver_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="idCardNo != null">
+        id_card_no,
+      </if>
+      <if test="idCardType != null">
+        id_card_type,
+      </if>
+      <if test="drivingLicenseNo != null">
+        driving_license_no,
+      </if>
+      <if test="drivingLicenseFileNo != null">
+        driving_license_file_no,
+      </if>
+      <if test="drivingLicenseType != null">
+        driving_license_type,
+      </if>
+      <if test="drivingLicenseImage != null">
+        driving_license_image,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="idCardNo != null">
+        #{idCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardType != null">
+        #{idCardType,jdbcType=INTEGER},
+      </if>
+      <if test="drivingLicenseNo != null">
+        #{drivingLicenseNo,jdbcType=VARCHAR},
+      </if>
+      <if test="drivingLicenseFileNo != null">
+        #{drivingLicenseFileNo,jdbcType=VARCHAR},
+      </if>
+      <if test="drivingLicenseType != null">
+        #{drivingLicenseType,jdbcType=VARCHAR},
+      </if>
+      <if test="drivingLicenseImage != null">
+        #{drivingLicenseImage,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.sdkj.dispatch.domain.po.DriverInfo">
+    update sdlh_driver_info
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="idCardNo != null">
+        id_card_no = #{idCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="idCardType != null">
+        id_card_type = #{idCardType,jdbcType=INTEGER},
+      </if>
+      <if test="drivingLicenseNo != null">
+        driving_license_no = #{drivingLicenseNo,jdbcType=VARCHAR},
+      </if>
+      <if test="drivingLicenseFileNo != null">
+        driving_license_file_no = #{drivingLicenseFileNo,jdbcType=VARCHAR},
+      </if>
+      <if test="drivingLicenseType != null">
+        driving_license_type = #{drivingLicenseType,jdbcType=VARCHAR},
+      </if>
+      <if test="drivingLicenseImage != null">
+        driving_license_image = #{drivingLicenseImage,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.sdkj.dispatch.domain.po.DriverInfo">
+    update sdlh_driver_info
+    set user_id = #{userId,jdbcType=BIGINT},
+      id_card_no = #{idCardNo,jdbcType=VARCHAR},
+      id_card_type = #{idCardType,jdbcType=INTEGER},
+      driving_license_no = #{drivingLicenseNo,jdbcType=VARCHAR},
+      driving_license_file_no = #{drivingLicenseFileNo,jdbcType=VARCHAR},
+      driving_license_type = #{drivingLicenseType,jdbcType=VARCHAR},
+      driving_license_image = #{drivingLicenseImage,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
