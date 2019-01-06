@@ -17,4 +17,6 @@ public interface OrderInfoMapper {
     List<Map<String,Object>> findOrderInfoListDisplay(Map<String,Object> param);
     
     int updateById(OrderInfo record);
+    
+    Map<String,Object> findOrderFeeDistribute(Map<String,Object> param);
 }

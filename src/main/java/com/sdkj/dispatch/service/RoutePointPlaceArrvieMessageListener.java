@@ -51,6 +51,10 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 			queryMap.clear();
 			queryMap.put("id", order.getUserId());
 			User user = userMapper.findSingleUser(queryMap);
+			
+			queryMap.clear();
+			queryMap.put("id", order.getDriverId());
+			User driver = userMapper.findSingleUser(queryMap);
 			if(pointList!=null && pointList.size()>1) {
 				String title = "";
 				String content = "";
@@ -59,6 +63,8 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.addMessage("orderId", orderId);
 				pushMessage.addMessage("pointId", pointId);
+				pushMessage.addMessage("mapTerminalId", driver.getMapTerminalId());
+				pushMessage.addMessage("mapServiceId", "8914");
 				OrderRoutePoint startPoint = pointList.get(0);
 				OrderRoutePoint endPoint = pointList.get(pointList.size()-1);
 				
