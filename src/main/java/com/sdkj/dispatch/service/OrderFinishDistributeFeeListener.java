@@ -76,7 +76,12 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 					PushMessage pushMessage = new PushMessage();
 					pushMessage.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
 					pushMessage.addMessage("orderFee", distributeFeeInfo.get("clientRefereeFee")+"");
-					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+					if(clientReferee.getUserType().intValue()==2){
+						pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+					}else{
+						pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+					}
+					
 				}
 			}
 			
@@ -92,7 +97,11 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 					PushMessage pushMessage = new PushMessage();
 					pushMessage.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
 					pushMessage.addMessage("orderFee", distributeFeeInfo.get("driverRefereeFee")+"");
-					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+					if(driverReferee.getUserType().intValue()==2){
+						pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+					}else{
+						pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+					}
 				}
 			}
 			return Action.CommitMessage;

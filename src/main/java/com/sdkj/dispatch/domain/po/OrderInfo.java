@@ -57,6 +57,8 @@ public class OrderInfo {
     
     private Long receiveUserId;
     
+    private Float totalDistance;
+    
     public Long getId() {
         return id;
     }
@@ -279,6 +281,14 @@ public class OrderInfo {
 
 	public void setReceiveUserId(Long receiveUserId) {
 		this.receiveUserId = receiveUserId;
+	}
+
+	public Float getTotalDistance() {
+		return totalDistance;
+	}
+
+	public void setTotalDistance(Float totalDistance) {
+		this.totalDistance = totalDistance;
 	}
 	
 	

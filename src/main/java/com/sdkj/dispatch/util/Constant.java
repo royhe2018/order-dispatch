@@ -12,6 +12,7 @@ public class Constant {
 	public static final String MQ_TAG_LEAVE_ROUTE_POINT = "LEAVE_POINT";
 	public static final String MQ_TAG_FINISH_ORDER = "FINISH_ORDER";
 	public static final String MQ_TAG_FEE_ACCOUNT = "FEE_ACCOUNT";
+	public static final String MQ_TAG_PAY_REMARK = "PAY_REMARK";
 	public static final String MQ_TAG_FORCE_OFFLINE = "FORCE_OFFLINE";
 	
 	/**
