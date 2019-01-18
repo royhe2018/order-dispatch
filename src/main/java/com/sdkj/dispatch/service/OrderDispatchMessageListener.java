@@ -22,6 +22,8 @@ import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
 import com.sdkj.dispatch.util.JsonUtil;
 
+import cn.jpush.api.device.OnlineStatus;
+
 @Component(Constant.MQ_TAG_DISPATCH_ORDER)
 public class OrderDispatchMessageListener implements MessageListener{
 	
@@ -44,7 +46,9 @@ public class OrderDispatchMessageListener implements MessageListener{
     		List<String> registrionIdList=new ArrayList<String>();
     		if(driverList!=null && driverList.size()>0){
     			for(User item:driverList){
-    				registrionIdList.add(item.getRegistrionId());
+    				if(pushComponent.isDriverOnline(item.getRegistrionId())) {
+    					registrionIdList.add(item.getRegistrionId());
+    				}
     			}
     		}
     		Map<String,String> extraInfo = new HashMap<String,String>();
