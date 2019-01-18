@@ -32,6 +32,7 @@
 		<result column="cancle_status" property="cancleStatus" />
 		<result column="sign_name_pic" property="signNamePic" />
 		<result column="sign_receive_time" property="signReceiveTime" />
+		<result column="total_distance" property="totalDistance" />
 	</resultMap>
 
 	<select id="findSingleOrder" parameterType="java.util.Map"

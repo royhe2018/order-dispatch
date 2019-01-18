@@ -62,7 +62,7 @@ public class OrderPayRemarkMessageListener implements MessageListener{
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setMessageType(Constant.MQ_TAG_PAY_REMARK);
 				pushMessage.addMessage("orderId", orderInfo.getId()+"");
-				pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
 			}
 			return Action.CommitMessage;
 		}catch(Exception e) {

@@ -16,7 +16,11 @@ import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
+import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
+import com.sdkj.dispatch.domain.po.OrderInfo;
+import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
@@ -30,6 +34,12 @@ public class OrderDispatchMessageListener implements MessageListener{
 	
 	@Autowired
 	private UserMapper userMapper;
+	
+	@Autowired
+	private OrderInfoMapper orderInfoMapper;
+	
+	@Autowired
+	private OrderRoutePointMapper orderRoutePointMapper;
 	
 	Logger logger = LoggerFactory.getLogger(OrderDispatchMessageListener.class);
 	@Override
@@ -57,6 +67,21 @@ public class OrderDispatchMessageListener implements MessageListener{
 			while(keyIt.hasNext()){
 				String key = keyIt.next();
 				pushMessage.addMessage(key, node.get(key).asText());
+			}
+			if(node!=null && node.has("orderId")){
+				String orderId = node.get("orderId").asText();
+				param.clear();
+				param.put("id", orderId);
+				OrderInfo order = orderInfoMapper.findSingleOrder(param);
+				param.clear();
+				param.put("orderId", orderId);
+				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
+				if(order!=null && routePointList!=null){
+					OrderRoutePoint startPoint = routePointList.get(0);
+					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
+					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+node.get("totalFee").asText()+"元";
+					pushMessage.addMessage("broadcastContent", broadcastContent);
+				}
 			}
     		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
     	}catch(Exception e) {
