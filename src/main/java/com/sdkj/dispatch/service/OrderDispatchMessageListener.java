@@ -26,8 +26,6 @@ import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
 import com.sdkj.dispatch.util.JsonUtil;
 
-import cn.jpush.api.device.OnlineStatus;
-
 @Component(Constant.MQ_TAG_DISPATCH_ORDER)
 public class OrderDispatchMessageListener implements MessageListener{
 	

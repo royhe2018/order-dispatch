@@ -7,6 +7,7 @@ public class Constant {
 	public static final String MQ_TAG_STOWAGE_ORDER = "STOWAGE";
 	public static final String MQ_TAG_SIGN_RECEIVE_ORDER = "RECEIVE";
 	public static final String MQ_TAG_CANCLE_ORDER = "CANCLE";
+	public static final String MQ_TAG_CANCLE_ORDER_BY_DRIVER = "CANCLE_BY_DRIVER";
 	public static final String MQ_TAG_CANCLE_TAKED_ORDER = "CANCLE_TAKED";
 	public static final String MQ_TAG_ARRIVE_ROUTE_POINT = "ARRIVE_POINT";
 	public static final String MQ_TAG_LEAVE_ROUTE_POINT = "LEAVE_POINT";
@@ -30,4 +31,10 @@ public class Constant {
 	 */
 	public static final int USER_TYPE_CUSTOMER=1;
 	public static final int USER_TYPE_DRIVER=2;
+	
+	/**
+	 * 订单取消状态0未取消；1已取消
+	 */
+	public static final int ORDER_CANCLE_STATUS_NORMAL=0;
+	public static final int ORDER_CANCLE_STATUS_CANCLE=1;
 }

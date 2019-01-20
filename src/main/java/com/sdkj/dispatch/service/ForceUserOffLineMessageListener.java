@@ -45,12 +45,12 @@ public class ForceUserOffLineMessageListener implements MessageListener{
 			pushMessage.setMessageType(Constant.MQ_TAG_FORCE_OFFLINE);
 			pushMessage.addMessage("userId", userId);
 			if(Constant.USER_TYPE_DRIVER==userType.intValue()) {
-				if(pushComponent.isUserOnline(registrionId)) {
-					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
-				}
-			}else {
 				if(pushComponent.isDriverOnline(registrionId)) {
 					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+				}
+			}else {
+				if(pushComponent.isUserOnline(registrionId)) {
+					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
 				}
 			}
     	}catch(Exception e) {

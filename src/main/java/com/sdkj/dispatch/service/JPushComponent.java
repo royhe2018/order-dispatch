@@ -80,7 +80,7 @@ public class JPushComponent {
 		try {
 			Map<String, OnlineStatus> userOnline = customerJpushClient.getUserOnlineStatus(registrionId);
 			if(userOnline!=null) {
-				return userOnline.get("registrionId").getOnline();
+				return userOnline.get(registrionId).getOnline();
 			}
 		}catch(Exception e) {
 			logger.error("获取设备在线状态异常", e);
@@ -91,8 +91,9 @@ public class JPushComponent {
 	public boolean isDriverOnline(String registrionId) {
 		try {
 			Map<String, OnlineStatus> userOnline = jpushClient.getUserOnlineStatus(registrionId);
+			logger.info("userOnline:"+JsonUtil.convertObjectToJsonStr(userOnline));
 			if(userOnline!=null) {
-				return userOnline.get("registrionId").getOnline();
+				return userOnline.get(registrionId).getOnline();
 			}
 		}catch(Exception e) {
 			logger.error("获取司机设备在线状态异常", e);
