@@ -91,7 +91,6 @@ public class JPushComponent {
 	public boolean isDriverOnline(String registrionId) {
 		try {
 			Map<String, OnlineStatus> userOnline = jpushClient.getUserOnlineStatus(registrionId);
-			logger.info("userOnline:"+JsonUtil.convertObjectToJsonStr(userOnline));
 			if(userOnline!=null) {
 				return userOnline.get(registrionId).getOnline();
 			}

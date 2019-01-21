@@ -55,7 +55,10 @@ public class OrderDispatchMessageListener implements MessageListener{
     		if(driverList!=null && driverList.size()>0){
     			for(User item:driverList){
     				if(pushComponent.isDriverOnline(item.getRegistrionId())) {
+    					logger.info(item.getNickName()+" : "+item.getAccount()+" is online");
     					registrionIdList.add(item.getRegistrionId());
+    				}else{
+    					logger.info(item.getNickName()+" : "+item.getAccount()+" is not online");
     				}
     			}
     		}
