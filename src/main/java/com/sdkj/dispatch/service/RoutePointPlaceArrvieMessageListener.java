@@ -48,9 +48,7 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 			queryMap.clear();
 			queryMap.put("id", orderId);
 			OrderInfo order = orderInfoMapper.findSingleOrder(queryMap);
-			queryMap.clear();
-			queryMap.put("id", order.getUserId());
-			User user = userMapper.findSingleUser(queryMap);
+			
 			
 			queryMap.clear();
 			queryMap.put("id", order.getDriverId());
@@ -59,7 +57,20 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 				String title = "";
 				String content = "";
 				List<String> registrionIdList = new ArrayList<String>();
-				registrionIdList.add(user.getRegistrionId());
+				for(OrderRoutePoint point:pointList){
+					if(point.getDealUserId()!=null){
+						queryMap.clear();
+						queryMap.put("id", point.getDealUserId());
+						User dealUser = userMapper.findSingleUser(queryMap);
+						registrionIdList.add(dealUser.getRegistrionId());
+					}
+				}
+				if(registrionIdList.size()<1){
+					queryMap.clear();
+					queryMap.put("id", order.getUserId());
+					User dealUser = userMapper.findSingleUser(queryMap);
+					registrionIdList.add(dealUser.getRegistrionId());
+				}
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.addMessage("orderId", orderId);
 				pushMessage.addMessage("pointId", pointId);
@@ -72,15 +83,16 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 					title="司机到达装货点";
 					content = "司机已到达装货点"+startPoint.getPlaceName()+",请准备装货!";
 					pushMessage.addMessage("placeName", startPoint.getPlaceName());
+					registrionIdList = registrionIdList.subList(0, 1);
 				}else if(pointId.equals(endPoint.getId()+"")) {
 					title="司机到达目的地";
-					content = "司机已到达目的地"+startPoint.getPlaceName()+",请准备卸货!";
+					content = "司机已到达目的地"+startPoint.getPlaceName()+",请您安排好时间准备卸货!";
 					pushMessage.addMessage("placeName", endPoint.getPlaceName());
 				}else {
 					title="司机到达途经点";
 					for(OrderRoutePoint point:pointList) {
 						if(pointId.equals(point.getId()+"")) {
-							content = "司机已到达目的地"+point.getPlaceName()+",请准备卸货!";
+							content = "司机已到达目的地"+point.getPlaceName()+",请您安排好时间准备卸货!";
 							pushMessage.addMessage("placeName", point.getPlaceName());
 						}
 					}

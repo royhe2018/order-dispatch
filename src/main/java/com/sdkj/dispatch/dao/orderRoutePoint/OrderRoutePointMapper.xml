@@ -13,6 +13,7 @@
     <result column="leave_time" jdbcType="VARCHAR" property="leaveTime" />
     <result column="wait_time" jdbcType="INTEGER" property="waitTime" />
     <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="deal_user_id" property="dealUserId" />
     <result column="distance_from_last_point" jdbcType="REAL" property="distanceFromLastPoint" />
   </resultMap>
  

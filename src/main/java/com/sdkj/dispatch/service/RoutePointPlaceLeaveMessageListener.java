@@ -61,7 +61,20 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 				String title = "";
 				String content = "";
 				List<String> registrionIdList = new ArrayList<String>();
-				registrionIdList.add(user.getRegistrionId());
+				for(OrderRoutePoint point:pointList){
+					if(point.getDealUserId()!=null){
+						queryMap.clear();
+						queryMap.put("id", point.getDealUserId());
+						User dealUser = userMapper.findSingleUser(queryMap);
+						registrionIdList.add(dealUser.getRegistrionId());
+					}
+				}
+				if(registrionIdList.size()<1){
+					queryMap.clear();
+					queryMap.put("id", order.getUserId());
+					User dealUser = userMapper.findSingleUser(queryMap);
+					registrionIdList.add(dealUser.getRegistrionId());
+				}
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.addMessage("orderId", orderId);
 				pushMessage.addMessage("pointId", pointId);
@@ -73,6 +86,7 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 					title="司机离开装货点";
 					content = "司机已离开装货点"+startPoint.getPlaceName()+",准备前往目的地!";
 					pushMessage.addMessage("placeName", startPoint.getPlaceName());
+					registrionIdList = registrionIdList.subList(0, 1);
 				}else if(pointId.equals(endPoint.getId()+"")) {
 					title="司机离开目的地";
 					content = "司机已离开目的地"+startPoint.getPlaceName()+",请确认货物已签收!";

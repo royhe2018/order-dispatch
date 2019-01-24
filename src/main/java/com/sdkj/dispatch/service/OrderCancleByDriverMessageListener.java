@@ -47,17 +47,25 @@ public class OrderCancleByDriverMessageListener implements MessageListener {
 			OrderInfo orderInfo = orderInfoMapper.findSingleOrder(queryMap);
 			if(orderInfo!=null && orderInfo.getCancleStatus().intValue()==Constant.ORDER_CANCLE_STATUS_CANCLE) {
 				queryMap.clear();
+				logger.info("orderId:"+orderId);
+				logger.info("UserId:"+orderInfo.getUserId());
 				queryMap.put("id", orderInfo.getUserId());
 				User user = userMapper.findSingleUser(queryMap);
 				if(user!=null) {
-					String title = "您接的订单已被取消";
-					String content = "您接的订单已取消,是否重新下单!";
+					logger.info("RegistrionId:"+user.getRegistrionId());
+					String title = "您的订单已被取消";
+					String content = "您的订单已取消,是否重新下单!";
 					List<String> registrionIdList = new ArrayList<String>();
 					registrionIdList.add(user.getRegistrionId());
 					PushMessage pushMessage = new PushMessage();
 					pushMessage.setMessageType(Constant.MQ_TAG_CANCLE_ORDER_BY_DRIVER);
 					pushMessage.addMessage("orderId", orderId);
 					pushMessage.addMessage("userId", orderInfo.getUserId()+"");
+					queryMap.clear();
+					queryMap.put("id", orderInfo.getDriverId());
+					User driver = userMapper.findSingleUser(queryMap);
+					pushMessage.addMessage("mapTerminalId", driver.getMapTerminalId());
+					pushMessage.addMessage("mapServiceId", "8914");
 					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
 				}
 			}

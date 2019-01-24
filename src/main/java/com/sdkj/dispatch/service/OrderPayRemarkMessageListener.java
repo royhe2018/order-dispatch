@@ -62,6 +62,29 @@ public class OrderPayRemarkMessageListener implements MessageListener{
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setMessageType(Constant.MQ_TAG_PAY_REMARK);
 				pushMessage.addMessage("orderId", orderInfo.getId()+"");
+				
+				queryMap.clear();
+				queryMap.put("orderId", orderInfo.getId());
+				List<Map<String,Object>> feeStatusList = orderInfoMapper.findOrderFeeByPayStatus(queryMap);
+				if(feeStatusList!=null && feeStatusList.size()>0){
+					Float totalAmount =0f;
+					Float totalPaidAmount =0f;
+					Float totalForPayAmount = 0f;
+					for(Map<String,Object> item:feeStatusList){
+						Float amount = Float.valueOf(item.get("money").toString());
+						if("0".equals(item.get("status").toString())){
+							totalForPayAmount += amount;
+						}else{
+							totalPaidAmount += amount;
+						}
+						totalAmount +=amount;
+					}
+					pushMessage.addMessage("totalAmount", totalAmount+"");
+					pushMessage.addMessage("totalPaidAmount", totalPaidAmount+"");
+					pushMessage.addMessage("totalForPayAmount", totalForPayAmount+"");
+				}
+				pushMessage.addMessage("totalDistance", orderInfo.getTotalDistance()+"");
+				pushMessage.addMessage("totalTimes", orderInfo.getCreateTime()+orderInfo.getFinishTime());
 				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
 			}
 			return Action.CommitMessage;

@@ -29,6 +29,8 @@ public class OrderRoutePoint {
     
     private String contactPhone;
     
+    private Long dealUserId;
+    
     public Long getId() {
         return id;
     }
@@ -139,6 +141,14 @@ public class OrderRoutePoint {
 
 	public void setContactPhone(String contactPhone) {
 		this.contactPhone = contactPhone;
+	}
+
+	public Long getDealUserId() {
+		return dealUserId;
+	}
+
+	public void setDealUserId(Long dealUserId) {
+		this.dealUserId = dealUserId;
 	}
     
 }

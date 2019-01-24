@@ -53,8 +53,8 @@ public class OrderTakedMessageListener implements MessageListener {
 				queryMap.put("id", orderInfo.getUserId());
 				User user = userMapper.findSingleUser(queryMap);
 				if(driver!=null) {
-					String title = "您接的订单已被接单";
-					String content = "您接的订单已被接单,请准备装货!";
+					String title = "您的订单已被接单";
+					String content = "您的订单已被接单,请准备装货!";
 					List<String> registrionIdList = new ArrayList<String>();
 					registrionIdList.add(user.getRegistrionId());
 					PushMessage pushMessage = new PushMessage();
