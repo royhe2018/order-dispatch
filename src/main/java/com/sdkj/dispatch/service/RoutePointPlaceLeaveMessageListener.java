@@ -2,22 +2,27 @@ package com.sdkj.dispatch.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sdkj.dispatch.dao.noticeRecord.NoticeRecordMapper;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
+import com.sdkj.dispatch.domain.po.NoticeRecord;
 import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
@@ -36,6 +41,9 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 	private JPushComponent pushComponent;
 	@Autowired
 	private UserMapper userMapper;
+	
+	@Autowired
+	private NoticeRecordServiceImpl noticeRecordServiceImpl;
 	@Override
 	public Action consume(Message message, ConsumeContext context) {
 
@@ -51,30 +59,35 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 			queryMap.put("id", orderId);
 			OrderInfo order = orderInfoMapper.findSingleOrder(queryMap);
 			queryMap.clear();
-			queryMap.put("id", order.getUserId());
-			User user = userMapper.findSingleUser(queryMap);
-			
-			queryMap.clear();
 			queryMap.put("id", order.getDriverId());
 			User driver = userMapper.findSingleUser(queryMap);
+			
+			queryMap.clear();
+			queryMap.put("id", order.getUserId());
+			User orderUser = userMapper.findSingleUser(queryMap);
 			if(pointList!=null && pointList.size()>1) {
 				String title = "";
 				String content = "";
-				List<String> registrionIdList = new ArrayList<String>();
+				String userIds = "";
+				String firsReceivUserId = "";
+				Set<String> registrionIdSet = new HashSet<String>();
 				for(OrderRoutePoint point:pointList){
+					logger.info("point id:"+point.getId()+";dealUserId:"+point.getDealUserId());
 					if(point.getDealUserId()!=null){
 						queryMap.clear();
 						queryMap.put("id", point.getDealUserId());
 						User dealUser = userMapper.findSingleUser(queryMap);
-						registrionIdList.add(dealUser.getRegistrionId());
+						registrionIdSet.add(dealUser.getRegistrionId());
+						userIds += dealUser.getId()+";";
+					}else{
+						registrionIdSet.add(orderUser.getRegistrionId());
+						if(StringUtils.isEmpty(firsReceivUserId)){
+							firsReceivUserId = orderUser.getRegistrionId();
+						}
+						userIds += orderUser.getId()+";";
 					}
 				}
-				if(registrionIdList.size()<1){
-					queryMap.clear();
-					queryMap.put("id", order.getUserId());
-					User dealUser = userMapper.findSingleUser(queryMap);
-					registrionIdList.add(dealUser.getRegistrionId());
-				}
+				List<String> registrionIdList = new ArrayList<String>(registrionIdSet);
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.addMessage("orderId", orderId);
 				pushMessage.addMessage("pointId", pointId);
@@ -86,7 +99,7 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 					title="司机离开装货点";
 					content = "司机已离开装货点"+startPoint.getPlaceName()+",准备前往目的地!";
 					pushMessage.addMessage("placeName", startPoint.getPlaceName());
-					registrionIdList = registrionIdList.subList(0, 1);
+					//registrionIdList = registrionIdList.subList(0, 1);
 				}else if(pointId.equals(endPoint.getId()+"")) {
 					title="司机离开目的地";
 					content = "司机已离开目的地"+startPoint.getPlaceName()+",请确认货物已签收!";
@@ -102,6 +115,14 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 				}
 				pushMessage.setMessageType(Constant.MQ_TAG_LEAVE_ROUTE_POINT);
 				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+				NoticeRecord target = new NoticeRecord();
+				target.setContent(content);
+				target.setExtraMessage(pushMessage.toString());
+				target.setMessageType(Constant.MQ_TAG_LEAVE_ROUTE_POINT);
+				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
+				target.setNoticeUserIds(userIds);
+				target.setOrderId(Integer.valueOf(orderId));
+				noticeRecordServiceImpl.saveNoticeRecord(target);
 			}
 			return Action.CommitMessage;
 		}catch(Exception e) {

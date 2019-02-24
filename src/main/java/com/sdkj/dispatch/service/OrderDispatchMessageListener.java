@@ -11,14 +11,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import cn.jiguang.common.utils.StringUtils;
+
 import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sdkj.dispatch.dao.driverInfo.DriverInfoMapper;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
+import com.sdkj.dispatch.domain.po.DriverInfo;
 import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
@@ -41,6 +45,9 @@ public class OrderDispatchMessageListener implements MessageListener{
 	@Autowired
 	private OrderRoutePointMapper orderRoutePointMapper;
 	
+	@Autowired
+	private DriverInfoMapper driverInfoMapper;
+	
 	Logger logger = LoggerFactory.getLogger(OrderDispatchMessageListener.class);
 	@Override
 	public Action consume(Message message, ConsumeContext context) {
@@ -54,12 +61,20 @@ public class OrderDispatchMessageListener implements MessageListener{
     		List<String> registrionIdList=new ArrayList<String>();
     		if(driverList!=null && driverList.size()>0){
     			for(User item:driverList){
-    				if(pushComponent.isDriverOnline(item.getRegistrionId())) {
-    					logger.info(item.getNickName()+" : "+item.getAccount()+" is online");
-    					registrionIdList.add(item.getRegistrionId());
+    				param.clear();
+    				param.put("userId", item.getId());
+    				DriverInfo driver = driverInfoMapper.findSingleDriver(param);
+    				if(driver!=null &&StringUtils.isNotEmpty(driver.getOnDutyStatus()) && !"1".equals(driver.getOnDutyStatus())){
+    					if(pushComponent.isDriverOnline(item.getRegistrionId())) {
+        					logger.info(item.getNickName()+" : "+item.getAccount()+" is online");
+        					registrionIdList.add(item.getRegistrionId());
+        				}else{
+        					logger.info(item.getNickName()+" : "+item.getAccount()+" is not online");
+        				}
     				}else{
-    					logger.info(item.getNickName()+" : "+item.getAccount()+" is not online");
+    					logger.info(item.getNickName()+" : "+item.getAccount()+" is not onduty");
     				}
+    				
     			}
     		}
     		Map<String,String> extraInfo = new HashMap<String,String>();

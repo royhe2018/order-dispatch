@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdkj.dispatch.dao.noticeRecord.NoticeRecordMapper">
+	<insert id="saveNoticeRecord" parameterType="com.sdkj.dispatch.domain.po.NoticeRecord"
+		useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+		 INSERT INTO `sdlh_notice_record`
+            (`order_id`,
+             `message_type`,
+             `notice_user_ids`,
+             `notice_user_register_ids`,
+             `content`,
+             `extra_message`)
+		VALUES (#{orderId},
+	        #{messageType},
+	        #{noticeUserIds},
+	        #{noticeRegisterIds},
+	        #{content},
+	        #{extraMessage})
+	</insert>
+</mapper>

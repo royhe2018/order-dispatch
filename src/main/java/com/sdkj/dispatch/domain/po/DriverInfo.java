@@ -16,7 +16,9 @@ public class DriverInfo {
     private String drivingLicenseType;
 
     private String drivingLicenseImage;
-
+    
+    private String onDutyStatus;
+    
     public Long getId() {
         return id;
     }
@@ -80,4 +82,13 @@ public class DriverInfo {
     public void setDrivingLicenseImage(String drivingLicenseImage) {
         this.drivingLicenseImage = drivingLicenseImage == null ? null : drivingLicenseImage.trim();
     }
+
+	public String getOnDutyStatus() {
+		return onDutyStatus;
+	}
+
+	public void setOnDutyStatus(String onDutyStatus) {
+		this.onDutyStatus = onDutyStatus;
+	}
+    
 }
