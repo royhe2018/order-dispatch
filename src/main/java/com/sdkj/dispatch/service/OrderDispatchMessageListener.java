@@ -79,13 +79,16 @@ public class OrderDispatchMessageListener implements MessageListener{
 			
     		for(int driverType=1;driverType<4;driverType++) {
     			String notifyUserIds = "";
+    			param.clear();
         		param.put("status", 2);
         		param.put("driverType", driverType);
         		param.put("onDutyStatus", 2);
         		param.put("registerCity", order.getCityName());
+        		logger.info("param:"+JsonUtil.convertObjectToJsonStr(param));
         		List<DriverInfo> driverList = driverInfoMapper.findDriverInfoList(param);
         		List<String> registrionIdList=new ArrayList<String>();
         		if(driverList!=null && driverList.size()>0){
+        			logger.info("driverList.size():"+driverList.size());
         			for(DriverInfo item:driverList){
         				param.clear();
         				param.put("id", item.getUserId());
@@ -98,28 +101,29 @@ public class OrderDispatchMessageListener implements MessageListener{
         					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is not online");
         				}
         			}
+        			
+        			param.clear();
+    				param.put("orderId", orderId);
+    				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
+    				if(order!=null && routePointList!=null){
+    					OrderRoutePoint startPoint = routePointList.get(0);
+    					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
+    					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
+    					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
+    					pushMessage.addMessage("broadcastContent", broadcastContent);
+    					pushMessage.addMessage("totalFee", totalDriverFee);
+    				}
+            		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
+            		NoticeRecord target = new NoticeRecord();
+    				target.setContent("您有新订单请及时接单");
+    				target.setExtraMessage(pushMessage.toString());
+    				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
+    				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
+    				target.setNoticeUserIds(notifyUserIds);
+    				target.setOrderId(Integer.valueOf(orderId));
+    				noticeRecordServiceImpl.saveNoticeRecord(target);
+    				Thread.sleep(3000);
         		}
-        		
-				param.clear();
-				param.put("orderId", orderId);
-				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
-				if(order!=null && routePointList!=null){
-					OrderRoutePoint startPoint = routePointList.get(0);
-					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
-					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
-					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
-					pushMessage.addMessage("broadcastContent", broadcastContent);
-				}
-        		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
-        		NoticeRecord target = new NoticeRecord();
-				target.setContent("您有新订单请及时接单");
-				target.setExtraMessage(pushMessage.toString());
-				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
-				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-				target.setNoticeUserIds(notifyUserIds);
-				target.setOrderId(Integer.valueOf(orderId));
-				noticeRecordServiceImpl.saveNoticeRecord(target);
-				Thread.sleep(3000);
     		}
     	}catch(Exception e) {
     		logger.error("消息派发异常", e);

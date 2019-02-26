@@ -21,6 +21,7 @@ public class DriverInfo {
     private Integer status;
     private String driverType;
     private Integer vehicleTypeId;
+    private String registerCity;
     public Long getId() {
         return id;
     }
@@ -116,4 +117,13 @@ public class DriverInfo {
 	public void setVehicleTypeId(Integer vehicleTypeId) {
 		this.vehicleTypeId = vehicleTypeId;
 	}
+
+	public String getRegisterCity() {
+		return registerCity;
+	}
+
+	public void setRegisterCity(String registerCity) {
+		this.registerCity = registerCity;
+	}
+	
 }
