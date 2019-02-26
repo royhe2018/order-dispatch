@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import cn.jiguang.common.utils.StringUtils;
-
 import com.aliyun.openservices.ons.api.Action;
 import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
@@ -23,6 +21,7 @@ import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
 import com.sdkj.dispatch.domain.po.DriverInfo;
+import com.sdkj.dispatch.domain.po.NoticeRecord;
 import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
@@ -48,6 +47,12 @@ public class OrderDispatchMessageListener implements MessageListener{
 	@Autowired
 	private DriverInfoMapper driverInfoMapper;
 	
+	@Autowired
+	private OrderFeeItemServiceImpl orderFeeItemServiceImpl;
+	
+	@Autowired
+	private NoticeRecordServiceImpl noticeRecordServiceImpl;
+	
 	Logger logger = LoggerFactory.getLogger(OrderDispatchMessageListener.class);
 	@Override
 	public Action consume(Message message, ConsumeContext context) {
@@ -56,27 +61,6 @@ public class OrderDispatchMessageListener implements MessageListener{
     		String orderInfo = new String(message.getBody(),"UTF-8");
     		logger.info("message: " +orderInfo);
     		Map<String,Object> param = new HashMap<String,Object>();
-    		param.put("userType",Constant.USER_TYPE_DRIVER);
-    		List<User> driverList = userMapper.findUserList(param);
-    		List<String> registrionIdList=new ArrayList<String>();
-    		if(driverList!=null && driverList.size()>0){
-    			for(User item:driverList){
-    				param.clear();
-    				param.put("userId", item.getId());
-    				DriverInfo driver = driverInfoMapper.findSingleDriver(param);
-    				if(driver!=null &&StringUtils.isNotEmpty(driver.getOnDutyStatus()) && !"1".equals(driver.getOnDutyStatus())){
-    					if(pushComponent.isDriverOnline(item.getRegistrionId())) {
-        					logger.info(item.getNickName()+" : "+item.getAccount()+" is online");
-        					registrionIdList.add(item.getRegistrionId());
-        				}else{
-        					logger.info(item.getNickName()+" : "+item.getAccount()+" is not online");
-        				}
-    				}else{
-    					logger.info(item.getNickName()+" : "+item.getAccount()+" is not onduty");
-    				}
-    				
-    			}
-    		}
     		Map<String,String> extraInfo = new HashMap<String,String>();
     		extraInfo.put("messageType", Constant.MQ_TAG_DISPATCH_ORDER);
     		extraInfo.put("message",orderInfo);
@@ -88,22 +72,55 @@ public class OrderDispatchMessageListener implements MessageListener{
 				String key = keyIt.next();
 				pushMessage.addMessage(key, node.get(key).asText());
 			}
-			if(node!=null && node.has("orderId")){
-				String orderId = node.get("orderId").asText();
-				param.clear();
-				param.put("id", orderId);
-				OrderInfo order = orderInfoMapper.findSingleOrder(param);
+			String orderId = node.get("orderId").asText();
+			param.clear();
+			param.put("id", orderId);
+			OrderInfo order = orderInfoMapper.findSingleOrder(param);
+			
+    		for(int driverType=1;driverType<4;driverType++) {
+    			String notifyUserIds = "";
+        		param.put("status", 2);
+        		param.put("driverType", driverType);
+        		param.put("onDutyStatus", 2);
+        		param.put("registerCity", order.getCityName());
+        		List<DriverInfo> driverList = driverInfoMapper.findDriverInfoList(param);
+        		List<String> registrionIdList=new ArrayList<String>();
+        		if(driverList!=null && driverList.size()>0){
+        			for(DriverInfo item:driverList){
+        				param.clear();
+        				param.put("id", item.getUserId());
+        				User driverUser = userMapper.findSingleUser(param);
+        				if(pushComponent.isDriverOnline(driverUser.getRegistrionId())) {
+        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is online");
+        					notifyUserIds +=driverUser.getId()+";";
+        					registrionIdList.add(driverUser.getRegistrionId());
+        				}else{
+        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is not online");
+        				}
+        			}
+        		}
+        		
 				param.clear();
 				param.put("orderId", orderId);
 				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
 				if(order!=null && routePointList!=null){
 					OrderRoutePoint startPoint = routePointList.get(0);
 					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
-					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+node.get("totalFee").asText()+"元";
+					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
+					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
 					pushMessage.addMessage("broadcastContent", broadcastContent);
 				}
-			}
-    		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
+        		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
+        		NoticeRecord target = new NoticeRecord();
+				target.setContent("您有新订单请及时接单");
+				target.setExtraMessage(pushMessage.toString());
+				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
+				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
+				target.setNoticeUserIds(notifyUserIds);
+				target.setOrderId(Integer.valueOf(orderId));
+				noticeRecordServiceImpl.saveNoticeRecord(target);
+				Thread.sleep(3000);
+    		}
     	}catch(Exception e) {
     		logger.error("消息派发异常", e);
     	}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdkj.dispatch.dao.distributionSetting.DistributionSettingMapper">
+  <resultMap id="BaseResultMap" type="com.sdkj.dispatch.domain.po.DistributionSetting">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="provence" jdbcType="VARCHAR" property="provence" />
+    <result column="city" jdbcType="VARCHAR" property="city" />
+    <result column="driver_type" property="driverType" />
+    <result column="vehicle_type" property="vehicleType" />
+    <result column="fee_type"  property="feeType" />
+    <result column="driver_amount" property="driverAmount" />
+    <result column="client_referee_amount" property="clientRefereeAmount" />
+    <result column="driver_referee_amount" property="driverRefereeAmount" />
+    <result column="platform_amount" property="platformAmount" />
+  </resultMap>
+ 
+  <select id="findDistributionSettingList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select *
+    from sdlh_distribution_setting
+    <trim prefix="where" prefixOverrides="and">
+    	<if test="id != null">and id = #{id}</if>
+    	<if test="city != null">and city = #{city}</if>
+    	<if test="feeType != null">and fee_type = #{feeType}</if>
+    	<if test="driverType != null">and driver_type = #{driverType}</if>
+    	<if test="vehicleType != null">and vehicle_type = #{vehicleType}</if>
+    </trim>
+  </select>
+</mapper>

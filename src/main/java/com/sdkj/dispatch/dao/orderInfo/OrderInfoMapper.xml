@@ -33,6 +33,7 @@
 		<result column="sign_name_pic" property="signNamePic" />
 		<result column="sign_receive_time" property="signReceiveTime" />
 		<result column="total_distance" property="totalDistance" />
+		<result column="city_name" property="cityName" />
 	</resultMap>
 
 	<select id="findSingleOrder" parameterType="java.util.Map"

@@ -11,6 +11,10 @@
     <result column="driving_license_type" jdbcType="VARCHAR" property="drivingLicenseType" />
     <result column="driving_license_image" jdbcType="VARCHAR" property="drivingLicenseImage" />
     <result column="on_duty_status" property="onDutyStatus" />
+    <result column="status" property="status" />
+    <result column="register_city" property="registerCity" />
+    <result column="driver_type" property="driverType" />
+    <result column="vehicle_type_id" property="vehicleTypeId" />
   </resultMap>
  
   <select id="findSingleDriver" parameterType="java.util.Map" resultMap="BaseResultMap">
@@ -21,4 +25,17 @@
    		<if test="userId != null">and user_id = #{userId}</if>
    	</trim>
   </select>
+  <select id="findDriverInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select *
+    from sdlh_driver_info
+   	<trim prefix="where" prefixOverrides="and">
+   		<if test="id != null">and id = #{id}</if>
+   		<if test="userId != null">and user_id = #{userId}</if>
+   		<if test="status != null">and status = #{status}</if>
+   		<if test="driverType != null">and driver_type = #{driverType}</if>
+   		<if test="onDutyStatus != null">and on_duty_status = #{onDutyStatus}</if>
+   		<if test="registerCity != null">and register_city = #{registerCity}</if>
+   	</trim>
+  </select>
+  
 </mapper>

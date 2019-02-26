@@ -59,6 +59,8 @@ public class OrderInfo {
     
     private Float totalDistance;
     
+    private String cityName;
+    
     public Long getId() {
         return id;
     }
@@ -290,6 +292,13 @@ public class OrderInfo {
 	public void setTotalDistance(Float totalDistance) {
 		this.totalDistance = totalDistance;
 	}
-	
+
+	public String getCityName() {
+		return cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
 	
 }

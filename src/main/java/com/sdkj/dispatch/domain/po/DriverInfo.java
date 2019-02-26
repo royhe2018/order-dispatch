@@ -18,7 +18,9 @@ public class DriverInfo {
     private String drivingLicenseImage;
     
     private String onDutyStatus;
-    
+    private Integer status;
+    private String driverType;
+    private Integer vehicleTypeId;
     public Long getId() {
         return id;
     }
@@ -90,5 +92,28 @@ public class DriverInfo {
 	public void setOnDutyStatus(String onDutyStatus) {
 		this.onDutyStatus = onDutyStatus;
 	}
-    
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getDriverType() {
+		return driverType;
+	}
+
+	public void setDriverType(String driverType) {
+		this.driverType = driverType;
+	}
+
+	public Integer getVehicleTypeId() {
+		return vehicleTypeId;
+	}
+
+	public void setVehicleTypeId(Integer vehicleTypeId) {
+		this.vehicleTypeId = vehicleTypeId;
+	}
 }
