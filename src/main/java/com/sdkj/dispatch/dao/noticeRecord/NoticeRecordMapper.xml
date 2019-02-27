@@ -8,7 +8,7 @@
 		<result column="order_id"  property="orderId" />
 		<result column="message_type" property="messageType" />
 		<result column="notice_user_ids" property="noticeUserIds" />
-		<result column="noticeRegisterIds" property="noticeRegisterIds" />
+		<result column="notice_user_register_ids" property="noticeRegisterIds" />
 		<result column="content" property="content" />
 		<result column="extra_message"  property="extraMessage" />
 	</resultMap>
@@ -19,7 +19,7 @@
 		from sdlh_notice_record
 		<trim prefix="where" prefixOverrides="and">
 			<if test="id != null">and id = #{id}</if>
-			<if test="orderId != null">and user_id = #{orderId}</if>
+			<if test="orderId != null">and order_id = #{orderId}</if>
 			<if test="messageType != null">and message_type = #{messageType}</if>
 		</trim>
 	</select>

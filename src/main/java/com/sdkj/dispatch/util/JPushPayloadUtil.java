@@ -33,4 +33,15 @@ public class JPushPayloadUtil {
                 .build();
         return payload;
     }
+    
+    public static PushPayload buildPushObjectSelfDefineMessageWithExtras(List<String> registrationIdList,String extraInfo) {
+        return PushPayload.newBuilder()
+                .setPlatform(Platform.android_ios())
+                .setAudience(Audience.registrationId(registrationIdList))
+                .setMessage(Message.newBuilder()
+                        .setMsgContent("self define message")
+                        .addExtra("extra",extraInfo)
+                        .build())
+                .build();
+    }
 }

@@ -56,6 +56,7 @@ public class OrderDismissListener implements MessageListener{
 			List<NoticeRecord> noticeList = noticeRecordServiceImpl.findNoticeRecord(queryMap);
 			
 			if(noticeList!=null && noticeList.size()>0) {
+				logger.info("noticeList.size:"+noticeList.size());
 				List<String> registrionIdList = new ArrayList<String>();
 				String userIds="";
 				String takedDriverRegisterId = "";
@@ -76,17 +77,20 @@ public class OrderDismissListener implements MessageListener{
 					}
 					userIds +=record.getNoticeUserIds();
 				}
+				logger.info(JsonUtil.convertObjectToJsonStr(registrionIdList).toString());
+				logger.info("takedDriverRegisterId:"+takedDriverRegisterId);
 				registrionIdList.remove(takedDriverRegisterId);
+				logger.info(JsonUtil.convertObjectToJsonStr(registrionIdList).toString());
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setMessageType(Constant.MQ_TAG_DISMISS_ORDER);
 				pushMessage.addMessage("orderId", orderId);
-				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer("", "", registrionIdList, pushMessage.toString());
+				pushComponent.buildPushObjectSelfDefineMessageForDriver(registrionIdList, pushMessage.toString());
         		NoticeRecord target = new NoticeRecord();
 				target.setContent("订单提醒销毁");
 				target.setExtraMessage(pushMessage.toString());
 				target.setMessageType(Constant.MQ_TAG_DISMISS_ORDER);
 				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-				target.setNoticeUserIds(takedUserId.replaceAll(takedUserId, ""));
+				target.setNoticeUserIds(userIds.replaceAll(takedUserId, ""));
 				target.setOrderId(Integer.valueOf(orderId));
 				noticeRecordServiceImpl.saveNoticeRecord(target);
 			}

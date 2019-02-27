@@ -76,6 +76,24 @@ public class JPushComponent {
 		}
 	}
 	
+	
+	public void buildPushObjectSelfDefineMessageForDriver(List<String> registrionIdList,String extraInfo){
+		try{
+			logger.info("extraInfo is:"+extraInfo);
+			logger.info("registrionIdList is:"+JsonUtil.convertObjectToJsonStr(registrionIdList));
+			PushPayload pushPayload = JPushPayloadUtil.buildPushObjectSelfDefineMessageWithExtras(registrionIdList, extraInfo);
+			PushResult result =jpushClient.sendPush(pushPayload);
+			logger.info("message is"+result.msg_id+":");
+			if(result.error!=null){
+				logger.info("error info:"+result.error.getMessage());
+			}else{
+				logger.info("success!");
+			}
+		}catch(Exception e){
+			logger.error("推送消息费常", e);
+		}
+	}
+	
 	public boolean isUserOnline(String registrionId) {
 		try {
 			Map<String, OnlineStatus> userOnline = customerJpushClient.getUserOnlineStatus(registrionId);
