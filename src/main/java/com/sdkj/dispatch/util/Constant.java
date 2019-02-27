@@ -15,6 +15,7 @@ public class Constant {
 	public static final String MQ_TAG_FEE_ACCOUNT = "FEE_ACCOUNT";
 	public static final String MQ_TAG_PAY_REMARK = "PAY_REMARK";
 	public static final String MQ_TAG_FORCE_OFFLINE = "FORCE_OFFLINE";
+	public static final String MQ_TAG_DISMISS_ORDER = "DISMISS";
 	
 	/**
 	 * 订单状态0未接单；1已接单；2司机到达装货点，3装货完成；4运途中；5终点到达；6已签收

@@ -122,7 +122,7 @@ public class OrderDispatchMessageListener implements MessageListener{
     				target.setNoticeUserIds(notifyUserIds);
     				target.setOrderId(Integer.valueOf(orderId));
     				noticeRecordServiceImpl.saveNoticeRecord(target);
-    				Thread.sleep(3000);
+    				Thread.sleep(2000);
         		}
     		}
     	}catch(Exception e) {

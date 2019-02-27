@@ -1,5 +1,8 @@
 package com.sdkj.dispatch.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,5 +25,9 @@ public class NoticeRecordServiceImpl {
 		}catch(Exception e){
 			logger.error("保存发送通知记录异常", e);
 		}
+	}
+	
+	public List<NoticeRecord> findNoticeRecord(Map<String,Object> param){
+		return noticeRecordMapper.findNoticeRecord(param);
 	}
 }
