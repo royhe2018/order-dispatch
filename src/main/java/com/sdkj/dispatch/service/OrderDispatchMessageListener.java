@@ -53,6 +53,9 @@ public class OrderDispatchMessageListener implements MessageListener{
 	@Autowired
 	private NoticeRecordServiceImpl noticeRecordServiceImpl;
 	
+	@Autowired
+	private OrderServiceImpl orderServiceImpl;
+	
 	Logger logger = LoggerFactory.getLogger(OrderDispatchMessageListener.class);
 	@Override
 	public Action consume(Message message, ConsumeContext context) {
@@ -95,34 +98,41 @@ public class OrderDispatchMessageListener implements MessageListener{
         				User driverUser = userMapper.findSingleUser(param);
         				if(pushComponent.isDriverOnline(driverUser.getRegistrionId())) {
         					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is online");
-        					notifyUserIds +=driverUser.getId()+";";
-        					registrionIdList.add(driverUser.getRegistrionId());
+        					if(!orderServiceImpl.isDriverHasOrderRunning(driverUser.getId())){
+        						notifyUserIds +=driverUser.getId()+";";
+            					registrionIdList.add(driverUser.getRegistrionId());
+        					}else{
+        						logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" have order running");
+        					}
         				}else{
         					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is not online");
         				}
         			}
-        			
-        			param.clear();
-    				param.put("orderId", orderId);
-    				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
-    				if(order!=null && routePointList!=null){
-    					OrderRoutePoint startPoint = routePointList.get(0);
-    					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
-    					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
-    					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
-    					pushMessage.addMessage("broadcastContent", broadcastContent);
-    					pushMessage.addMessage("totalFee", totalDriverFee);
-    				}
-            		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
-            		NoticeRecord target = new NoticeRecord();
-    				target.setContent("您有新订单请及时接单");
-    				target.setExtraMessage(pushMessage.toString());
-    				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
-    				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-    				target.setNoticeUserIds(notifyUserIds);
-    				target.setOrderId(Integer.valueOf(orderId));
-    				noticeRecordServiceImpl.saveNoticeRecord(target);
-    				Thread.sleep(2000);
+        			if(registrionIdList.size()>0){
+        				param.clear();
+        				param.put("orderId", orderId);
+        				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
+        				if(order!=null && routePointList!=null){
+        					OrderRoutePoint startPoint = routePointList.get(0);
+        					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
+        					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
+        					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
+        					pushMessage.addMessage("broadcastContent", broadcastContent);
+        					pushMessage.addMessage("totalFee", totalDriverFee);
+        				}
+                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
+                		NoticeRecord target = new NoticeRecord();
+        				target.setContent("您有新订单请及时接单");
+        				target.setExtraMessage(pushMessage.toString());
+        				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
+        				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
+        				target.setNoticeUserIds(notifyUserIds);
+        				target.setOrderId(Integer.valueOf(orderId));
+        				noticeRecordServiceImpl.saveNoticeRecord(target);
+        				Thread.sleep(2000);
+        			}else{
+        				logger.info("orderId:"+orderId+" driver is busy");
+        			}
         		}
     		}
     	}catch(Exception e) {

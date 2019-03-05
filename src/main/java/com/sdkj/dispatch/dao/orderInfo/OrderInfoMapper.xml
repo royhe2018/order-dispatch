@@ -81,8 +81,14 @@
 		<trim prefix="where" prefixOverrides="and">
 			<if test="id!=null"> and id = #{id}</if>
 			<if test="userId != null"> and user_id = #{id}</if>
+			<if test="driverId != null"> and driver_id = #{driverId}</if>
 			<if test="cancleStatus != null"> and cancle_status = #{cancleStatus}</if>
 			<if test="status != null"> and status = #{status}</if>
+			<if test="validStatusList != null"> and status in
+				<foreach collection="validStatusList" item="item" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
 		</trim>
 	</select>
 	

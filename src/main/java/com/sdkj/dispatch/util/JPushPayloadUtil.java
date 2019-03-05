@@ -10,9 +10,13 @@ import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 
+import com.google.gson.JsonObject;
+
 public class JPushPayloadUtil {
     public static PushPayload buildPushObjectWithExtra(String title,String content,List<String> registrationIdList,String extraInfo) {
-        PushPayload payload = PushPayload.newBuilder()
+    	JsonObject intent = new JsonObject();
+    	intent.addProperty("url", "intent:#Intent;component=com.jiguang.push/com.shundao.shundaolahuo.activity.OpenClickActivity;end");
+    	PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.registrationId(registrationIdList))
                 .setNotification(Notification.newBuilder()
@@ -20,6 +24,8 @@ public class JPushPayloadUtil {
                         .addPlatformNotification(AndroidNotification.newBuilder()
                                 .addExtra("extra", extraInfo)
                                 .setTitle(title)
+                                .setUriActivity("com.shundao.shundaolahuo.activity.OpenClickActivity")
+                                //.setIntent(intent)
                                 .build())
                         .addPlatformNotification(IosNotification.newBuilder()
                                 .incrBadge(1)
@@ -31,8 +37,14 @@ public class JPushPayloadUtil {
                          .addExtra("extra",extraInfo)
                          .build())       
                 .build();
+        
+        
+        
         return payload;
     }
+    
+ 
+    
     
     public static PushPayload buildPushObjectSelfDefineMessageWithExtras(List<String> registrationIdList,String extraInfo) {
         return PushPayload.newBuilder()

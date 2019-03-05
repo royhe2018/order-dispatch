@@ -48,6 +48,7 @@ public class JPushComponent {
 			logger.info("registrionIdList is:"+JsonUtil.convertObjectToJsonStr(registrionIdList));
 			PushPayload pushPayload = JPushPayloadUtil.buildPushObjectWithExtra(title, content, registrionIdList, extraInfo);
 			PushResult result =jpushClient.sendPush(pushPayload);
+			//jpushClient.sendPush(pushPayload);
 			logger.info("message is"+result.msg_id+":");
 			if(result.error!=null){
 				logger.info("error info:"+result.error.getMessage());
