@@ -33,12 +33,16 @@
 		`notice_user_ids`,
 		`notice_user_register_ids`,
 		`content`,
-		`extra_message`)
+		`extra_message`,
+		`message_id`,
+		`create_time`)
 		VALUES (#{orderId},
 		#{messageType},
 		#{noticeUserIds},
 		#{noticeRegisterIds},
 		#{content},
-		#{extraMessage})
+		#{extraMessage},
+		#{messageId},
+		#{createTime})
 	</insert>
 </mapper>

@@ -28,6 +28,7 @@ import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
+import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JsonUtil;
 @Component(Constant.MQ_TAG_LEAVE_ROUTE_POINT)
 public class RoutePointPlaceLeaveMessageListener implements MessageListener {
@@ -122,6 +123,8 @@ public class RoutePointPlaceLeaveMessageListener implements MessageListener {
 				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
 				target.setNoticeUserIds(userIds);
 				target.setOrderId(Integer.valueOf(orderId));
+				target.setMessageId(message.getMsgID());
+				target.setCreateTime(DateUtilLH.getCurrentTime());
 				noticeRecordServiceImpl.saveNoticeRecord(target);
 			}
 			return Action.CommitMessage;

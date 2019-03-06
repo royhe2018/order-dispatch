@@ -8,7 +8,8 @@ public class NoticeRecord {
 	private String noticeRegisterIds;
 	private String content;
 	private String extraMessage;
-	
+	private String messageId;
+	private String createTime;
 	public Integer getId() {
 		return id;
 	}
@@ -51,5 +52,16 @@ public class NoticeRecord {
 	public void setExtraMessage(String extraMessage) {
 		this.extraMessage = extraMessage;
 	}
-	
+	public String getMessageId() {
+		return messageId;
+	}
+	public void setMessageId(String messageId) {
+		this.messageId = messageId;
+	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
 }
