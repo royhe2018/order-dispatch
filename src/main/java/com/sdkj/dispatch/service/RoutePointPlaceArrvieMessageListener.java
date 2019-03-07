@@ -18,17 +18,14 @@ import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sdkj.dispatch.dao.noticeRecord.NoticeRecordMapper;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
-import com.sdkj.dispatch.domain.po.NoticeRecord;
 import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
-import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JsonUtil;
 @Component(Constant.MQ_TAG_ARRIVE_ROUTE_POINT)
 public class RoutePointPlaceArrvieMessageListener implements MessageListener {
@@ -41,8 +38,6 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 	private JPushComponent pushComponent;
 	@Autowired
 	private UserMapper userMapper;
-	@Autowired
-	private NoticeRecordServiceImpl noticeRecordServiceImpl;
 	
 	@Override
 	public Action consume(Message message, ConsumeContext context) {
@@ -119,17 +114,7 @@ public class RoutePointPlaceArrvieMessageListener implements MessageListener {
 					}
 				}
 				pushMessage.setMessageType(Constant.MQ_TAG_ARRIVE_ROUTE_POINT);
-				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
-				NoticeRecord target = new NoticeRecord();
-				target.setContent(content);
-				target.setExtraMessage(pushMessage.toString());
-				target.setMessageType(Constant.MQ_TAG_ARRIVE_ROUTE_POINT);
-				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-				target.setNoticeUserIds(userIds);
-				target.setOrderId(Integer.valueOf(orderId));
-				target.setMessageId(message.getMsgID());
-				target.setCreateTime(DateUtilLH.getCurrentTime());
-				noticeRecordServiceImpl.saveNoticeRecord(target);
+				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,userIds,orderId,message.getMsgID());
 			}
 			return Action.CommitMessage;
 		}catch(Exception e) {

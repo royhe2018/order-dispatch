@@ -29,8 +29,7 @@ public class OrderCancleByDriverMessageListener implements MessageListener {
 	Logger logger = LoggerFactory.getLogger(OrderCancleByDriverMessageListener.class);
 	@Autowired
 	private OrderInfoMapper orderInfoMapper;
-	@Autowired
-	private OrderRoutePointMapper orderRoutePointMapper;
+ 
 	@Autowired
 	private JPushComponent pushComponent;
 	@Autowired
@@ -66,7 +65,7 @@ public class OrderCancleByDriverMessageListener implements MessageListener {
 					User driver = userMapper.findSingleUser(queryMap);
 					pushMessage.addMessage("mapTerminalId", driver.getMapTerminalId());
 					pushMessage.addMessage("mapServiceId", "8914");
-					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,user.getId()+"",orderId,message.getMsgID());
 				}
 			}
 			return Action.CommitMessage;

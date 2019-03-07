@@ -118,20 +118,14 @@ public class OrderDispatchMessageListener implements MessageListener{
         					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
         					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
         					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
+        					if(order.getServiceVehicleLevelId()!=null && order.getServiceVehicleLevelId().intValue()==2){
+        						broadcastContent = "返程车,"+broadcastContent;
+        					}
+        					pushMessage.addMessage("serviceLevel", order.getServiceVehicleLevelId()+"");
         					pushMessage.addMessage("broadcastContent", broadcastContent);
         					pushMessage.addMessage("totalFee", totalDriverFee);
         				}
-                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage.toString());
-                		NoticeRecord target = new NoticeRecord();
-        				target.setContent("您有新订单请及时接单");
-        				target.setExtraMessage(pushMessage.toString());
-        				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
-        				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-        				target.setNoticeUserIds(notifyUserIds);
-        				target.setOrderId(Integer.valueOf(orderId));
-        				target.setMessageId(message.getMsgID());
-        				target.setCreateTime(DateUtilLH.getCurrentTime());
-        				noticeRecordServiceImpl.saveNoticeRecord(target);
+                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage,notifyUserIds,orderId,message.getMsgID());
         				Thread.sleep(2000);
         			}else{
         				logger.info("orderId:"+orderId+" driver is busy");

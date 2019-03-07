@@ -22,7 +22,6 @@ import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.User;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
-import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JsonUtil;
 
 @Component(Constant.MQ_TAG_DISMISS_ORDER)
@@ -85,17 +84,7 @@ public class OrderDismissListener implements MessageListener{
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setMessageType(Constant.MQ_TAG_DISMISS_ORDER);
 				pushMessage.addMessage("orderId", orderId);
-				pushComponent.buildPushObjectSelfDefineMessageForDriver(registrionIdList, pushMessage.toString());
-        		NoticeRecord target = new NoticeRecord();
-				target.setContent("订单提醒销毁");
-				target.setExtraMessage(pushMessage.toString());
-				target.setMessageType(Constant.MQ_TAG_DISMISS_ORDER);
-				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-				target.setNoticeUserIds(userIds.replaceAll(takedUserId, ""));
-				target.setOrderId(Integer.valueOf(orderId));
-				target.setMessageId(message.getMsgID());
-				target.setCreateTime(DateUtilLH.getCurrentTime());
-				noticeRecordServiceImpl.saveNoticeRecord(target);
+				pushComponent.buildPushObjectSelfDefineMessageForDriver(registrionIdList, pushMessage,userIds,orderId,message.getMsgID());
 			}
     	}catch(Exception e) {
     		logger.error("消息派发异常", e);

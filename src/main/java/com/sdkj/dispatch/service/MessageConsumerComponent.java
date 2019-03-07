@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import com.aliyun.openservices.ons.api.Consumer;
 import com.aliyun.openservices.ons.api.ONSFactory;
 import com.aliyun.openservices.ons.api.PropertyKeyConst;
-import com.sdkj.dispatch.util.Constant;
 
 @Component
 public class MessageConsumerComponent {
@@ -26,21 +25,7 @@ public class MessageConsumerComponent {
 	private String secretKey;
 	@Value("${ali.mq.onsaddr}")
 	private String onsaddr;
-	
-	@Autowired
-	private OrderDispatchMessageListener orderDispatchMessageListener;
-	@Autowired
-	private OrderCancleMessageListener orderCancleMessageListener;
-	@Autowired
-	private OrderSignReceiveMessageListener orderSignReceiveMessageListener;
-	@Autowired
-	private OrderStowageMessageListener orderStowageMessageListener;
-	@Autowired
-	private OrderTakedMessageListener orderTakedMessageListener;
-	@Autowired
-	private RoutePointPlaceArrvieMessageListener routePointPlaceArrvieMessageListener;
-	@Autowired
-	private RoutePointPlaceLeaveMessageListener routePointPlaceLeaveMessageListener;
+ 
 	@Autowired
 	private TotalMessageListener totalMessageListener;
 	@PostConstruct

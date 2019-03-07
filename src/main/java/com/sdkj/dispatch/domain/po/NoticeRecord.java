@@ -10,6 +10,7 @@ public class NoticeRecord {
 	private String extraMessage;
 	private String messageId;
 	private String createTime;
+	private String jpushMessageId;
 	public Integer getId() {
 		return id;
 	}
@@ -63,5 +64,11 @@ public class NoticeRecord {
 	}
 	public void setCreateTime(String createTime) {
 		this.createTime = createTime;
+	}
+	public String getJpushMessageId() {
+		return jpushMessageId;
+	}
+	public void setJpushMessageId(String jpushMessageId) {
+		this.jpushMessageId = jpushMessageId;
 	}
 }

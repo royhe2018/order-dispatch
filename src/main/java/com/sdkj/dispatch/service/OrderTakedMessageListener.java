@@ -16,7 +16,6 @@ import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
-import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
 import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.User;
@@ -28,8 +27,7 @@ public class OrderTakedMessageListener implements MessageListener {
 	Logger logger = LoggerFactory.getLogger(OrderTakedMessageListener.class);
 	@Autowired
 	private OrderInfoMapper orderInfoMapper;
-	@Autowired
-	private OrderRoutePointMapper orderRoutePointMapper;
+ 
 	@Autowired
 	private JPushComponent pushComponent;
 	@Autowired
@@ -66,7 +64,7 @@ public class OrderTakedMessageListener implements MessageListener {
 					pushMessage.addMessage("driverPhone", driver.getAccount());
 					pushMessage.addMessage("mapTerminalId", driver.getMapTerminalId());
 					pushMessage.addMessage("mapServiceId", "8914");
-					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,driver.getId()+"",orderId,message.getMsgID());
 				}
 			}
 			return Action.CommitMessage;

@@ -65,7 +65,7 @@ public class OrderSignReceiveMessageListener implements MessageListener {
 					pushMessage.addMessage("userId", orderInfo.getUserId()+"");
 					pushMessage.addMessage("driverId", orderInfo.getDriverId()+"");
 					pushMessage.addMessage("finishTime", orderInfo.getFinishTime());
-					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage,user.getId()+"",orderId,message.getMsgID());
 				}
 			}
 			return Action.CommitMessage;

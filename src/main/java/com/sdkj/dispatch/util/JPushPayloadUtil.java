@@ -43,7 +43,35 @@ public class JPushPayloadUtil {
         return payload;
     }
     
- 
+    public static PushPayload buildPushObjectWithExtraForDriver(String title,String content,List<String> registrationIdList,String extraInfo) {
+    	JsonObject intent = new JsonObject();
+    	intent.addProperty("url", "intent:#Intent;component=com.jiguang.push/com.shundao.shundaolahuo.activity.OpenClickActivity;end");
+    	PushPayload payload = PushPayload.newBuilder()
+                .setPlatform(Platform.android_ios())
+                .setAudience(Audience.registrationId(registrationIdList))
+                .setNotification(Notification.newBuilder()
+                        .setAlert(content)
+                        .addPlatformNotification(AndroidNotification.newBuilder()
+                                .addExtra("extra", extraInfo)
+                                .setTitle(title)
+                                .setUriActivity("com.shundao.shundaolahuodriver.activity.OpenClickActivity")
+                                //.setIntent(intent)
+                                .build())
+                        .addPlatformNotification(IosNotification.newBuilder()
+                                .incrBadge(1)
+                                .addExtra("extra", extraInfo).build())
+                        .build())
+                 .setMessage(Message.newBuilder()
+                         .setMsgContent(content)
+                         .setTitle(title)
+                         .addExtra("extra",extraInfo)
+                         .build())       
+                .build();
+        
+        
+        
+        return payload;
+    }
     
     
     public static PushPayload buildPushObjectSelfDefineMessageWithExtras(List<String> registrationIdList,String extraInfo) {

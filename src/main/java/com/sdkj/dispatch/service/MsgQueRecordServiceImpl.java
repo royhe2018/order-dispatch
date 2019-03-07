@@ -18,7 +18,7 @@ import com.sdkj.dispatch.util.DateUtilLH;
 @Service
 @Transactional
 public class MsgQueRecordServiceImpl {
-	Logger logger = LoggerFactory.getLogger(NoticeRecordServiceImpl.class);
+	Logger logger = LoggerFactory.getLogger(MsgQueRecordServiceImpl.class);
 	
 	@Autowired
 	private MsgQueRecordMapper msgQueRecordMapper;
@@ -27,7 +27,14 @@ public class MsgQueRecordServiceImpl {
 		try {
 			Map<String,Object> param = new HashMap<String,Object>();
 			param.put("messageId",message.getMsgID());
-			MsgQueRecord msgQueRecord =msgQueRecordMapper.findMsgQueRecord(param);
+			MsgQueRecord msgQueRecord =null;
+			for(int i=0;i<3;i++){
+				msgQueRecord =msgQueRecordMapper.findMsgQueRecord(param);
+				if(msgQueRecord==null){
+					logger.info(message.getMsgID()+" is null");
+					Thread.sleep(500);
+				}
+			}
 			if(msgQueRecord!=null) {
 				msgQueRecord.setConsumeTime(DateUtilLH.getCurrentTime());
 				Date startTime = DateUtilLH.convertStr2Date(msgQueRecord.getCreateTime(), "yyyy-MM-dd HH:mm:ss");

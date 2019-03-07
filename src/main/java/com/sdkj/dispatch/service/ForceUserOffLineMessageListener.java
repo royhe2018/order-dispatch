@@ -13,7 +13,6 @@ import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sdkj.dispatch.dao.user.UserMapper;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
 import com.sdkj.dispatch.util.JsonUtil;
@@ -23,9 +22,6 @@ public class ForceUserOffLineMessageListener implements MessageListener{
 	
 	@Autowired
 	private JPushComponent pushComponent;
-	
-	@Autowired
-	private UserMapper userMapper;
 	
 	Logger logger = LoggerFactory.getLogger(ForceUserOffLineMessageListener.class);
 	@Override
@@ -46,11 +42,11 @@ public class ForceUserOffLineMessageListener implements MessageListener{
 			pushMessage.addMessage("userId", userId);
 			if(Constant.USER_TYPE_DRIVER==userType.intValue()) {
 				if(pushComponent.isDriverOnline(registrionId)) {
-					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage,"","",message.getMsgID());
 				}
 			}else {
 				if(pushComponent.isUserOnline(registrionId)) {
-					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+					pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,"","",message.getMsgID());
 				}
 			}
     	}catch(Exception e) {

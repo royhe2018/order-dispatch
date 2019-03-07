@@ -15,15 +15,11 @@ import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sdkj.dispatch.dao.noticeRecord.NoticeRecordMapper;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
-import com.sdkj.dispatch.domain.po.NoticeRecord;
-import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.User;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
-import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JsonUtil;
 
 @Component(Constant.MQ_TAG_FINISH_ORDER)
@@ -37,9 +33,7 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 	private JPushComponent pushComponent;
 	@Autowired
 	private UserMapper userMapper;
-	
-	@Autowired
-	private NoticeRecordServiceImpl noticeRecordServiceImpl;
+ 
 	@Override
 	public Action consume(Message message, ConsumeContext context) {
 		try {
@@ -48,7 +42,7 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 			String orderId = mqInfoNode.get("orderId").asText();
 			Map<String,Object> queryMap = new HashMap<String,Object>();
 			queryMap.put("id", orderId);
-			OrderInfo orderInfo = orderInfoMapper.findSingleOrder(queryMap);
+			//OrderInfo orderInfo = orderInfoMapper.findSingleOrder(queryMap);
 			queryMap.clear();
 			queryMap.put("status", 1);//支付状态已付清
 			queryMap.put("orderId", orderId);
@@ -65,17 +59,7 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 					PushMessage pushMessage = new PushMessage();
 					pushMessage.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
 					pushMessage.addMessage("orderFee", distributeFeeInfo.get("driverFee")+"");
-					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
-					NoticeRecord target = new NoticeRecord();
-					target.setContent(content);
-					target.setExtraMessage(pushMessage.toString());
-					target.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
-					target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-					target.setNoticeUserIds(driver.getId()+"");
-					target.setOrderId(Integer.valueOf(orderId));
-					target.setMessageId(message.getMsgID());
-					target.setCreateTime(DateUtilLH.getCurrentTime());
-					noticeRecordServiceImpl.saveNoticeRecord(target);
+					pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage,driver.getId()+"",orderId,message.getMsgID());
 				}
 			}
 			
@@ -95,20 +79,10 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 						pushMessage.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
 						pushMessage.addMessage("orderFee", distributeFeeInfo.get("clientRefereeFee")+"");
 						if(clientReferee.getUserType().intValue()==2){
-							pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+							pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage,clientReferee.getId()+"",orderId,message.getMsgID());
 						}else{
-							pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+							pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,clientReferee.getId()+"",orderId,message.getMsgID());
 						}
-						NoticeRecord target = new NoticeRecord();
-						target.setContent(content);
-						target.setExtraMessage(pushMessage.toString());
-						target.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
-						target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-						target.setNoticeUserIds(clientReferee.getId()+"");
-						target.setOrderId(Integer.valueOf(orderId));
-						target.setMessageId(message.getMsgID());
-						target.setCreateTime(DateUtilLH.getCurrentTime());
-						noticeRecordServiceImpl.saveNoticeRecord(target);
 					}
 				}
 			}
@@ -129,20 +103,10 @@ public class OrderFinishDistributeFeeListener implements MessageListener{
 						pushMessage.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
 						pushMessage.addMessage("orderFee", distributeFeeInfo.get("driverRefereeFee")+"");
 						if(driverReferee.getUserType().intValue()==2){
-							pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+							pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage,driverReferee.getId()+"",orderId,message.getMsgID());
 						}else{
-							pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+							pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,driverReferee.getId()+"",orderId,message.getMsgID());
 						}
-						NoticeRecord target = new NoticeRecord();
-						target.setContent(content);
-						target.setExtraMessage(pushMessage.toString());
-						target.setMessageType(Constant.MQ_TAG_FEE_ACCOUNT);
-						target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
-						target.setNoticeUserIds(driverReferee.getId()+"");
-						target.setOrderId(Integer.valueOf(orderId));
-						target.setMessageId(message.getMsgID());
-						target.setCreateTime(DateUtilLH.getCurrentTime());
-						noticeRecordServiceImpl.saveNoticeRecord(target);
 					}
 				}
 			}

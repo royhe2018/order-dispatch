@@ -110,7 +110,7 @@ public class OrderPayRemarkMessageListener implements MessageListener{
 				pushMessage.addMessage("totalTimes", (endTime.getTime()-startTime.getTime())/(1000*60)+"");
 				pushMessage.addMessage("preContent", preContent);
 				pushMessage.addMessage("afterContent", "是否去支付费用?");
-				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage.toString());
+				pushComponent.sentAndroidAndIosExtraInfoPushForCustomer(title, content, registrionIdList, pushMessage,user.getId()+"",orderId,message.getMsgID());
 			}
 			return Action.CommitMessage;
 		}catch(Exception e) {

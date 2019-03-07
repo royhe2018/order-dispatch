@@ -26,7 +26,6 @@ import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
-import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JsonUtil;
 
 @Component(Constant.MQ_TAG_REPEAT_DISPATCH_ORDER)
@@ -83,10 +82,7 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
 			for(NoticeRecord record:noticeList) {
 				sendedUsers +=record.getNoticeUserIds();
 			}
-    		
-    		
-    		
-    		
+ 
     		List<String> registrionIdListForDriver1=new ArrayList<String>();
     		List<String> registrionIdListForDriver2=new ArrayList<String>();
     		List<String> registrionIdListForDriver3=new ArrayList<String>();
@@ -149,9 +145,7 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
         				pushMessage.addMessage("totalDistance", order.getTotalDistance()+"");
         				 
         				pushMessage.addMessage("remark", order.getRemark());
-   
  
-        				
         				
         				param.clear();
         				param.put("orderId", orderId);
@@ -161,8 +155,11 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
         					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
         					String totalDriverFee = orderFeeItemServiceImpl.caculateOrderFee(order, driverType);
         					String broadcastContent = "从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName()+",共"+order.getTotalDistance()+"公里,总费用："+totalDriverFee+"元";
+        					if(order.getServiceVehicleLevelId()!=null && order.getServiceVehicleLevelId().intValue()==2){
+        						broadcastContent = "返程车,"+broadcastContent;
+        					}
+        					pushMessage.addMessage("serviceLevel", order.getServiceVehicleLevelId()+"");
         					pushMessage.addMessage("broadcastContent", broadcastContent);
-        					
         					pushMessage.addMessage("startPointName", startPoint.getPlaceName());
             				pushMessage.addMessage("startPointAddress", startPoint.getAddress());
             				pushMessage.addMessage("startPointLocation", startPoint.getLat() + "," + startPoint.getLog());
@@ -175,17 +172,7 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
             				pushMessage.addMessage("attachFee", totalDriverFee);
             				pushMessage.addMessage("payStatus", "0");
         				}
-                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdListForDriver1, pushMessage.toString());
-                		NoticeRecord target = new NoticeRecord();
-        				target.setContent("您有新订单请及时接单");
-        				target.setExtraMessage(pushMessage.toString());
-        				target.setMessageType(Constant.MQ_TAG_DISPATCH_ORDER);
-        				target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdListForDriver1));
-        				target.setNoticeUserIds(userIds);
-        				target.setOrderId(Integer.valueOf(orderId));
-        				target.setMessageId(message.getMsgID());
-        				target.setCreateTime(DateUtilLH.getCurrentTime());
-        				noticeRecordServiceImpl.saveNoticeRecord(target);
+                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdListForDriver1, pushMessage,userIds,orderId,message.getMsgID());
         			}
     			}
     		}

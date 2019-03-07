@@ -35,7 +35,8 @@
 		`content`,
 		`extra_message`,
 		`message_id`,
-		`create_time`)
+		`create_time`,
+		`jpush_message_id`)
 		VALUES (#{orderId},
 		#{messageType},
 		#{noticeUserIds},
@@ -43,6 +44,7 @@
 		#{content},
 		#{extraMessage},
 		#{messageId},
-		#{createTime})
+		#{createTime},
+		#{jpushMessageId})
 	</insert>
 </mapper>

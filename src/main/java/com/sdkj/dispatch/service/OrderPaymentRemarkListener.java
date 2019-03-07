@@ -57,7 +57,7 @@ public class OrderPaymentRemarkListener implements MessageListener{
 				pushMessage.setMessageType(Constant.MQ_TAG_PAYMENT_ORDER);
 				pushMessage.addMessage("orderId", orderId);
 				pushMessage.addMessage("userId", orderInfo.getUserId()+"");
-				pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage.toString());
+				pushComponent.sentAndroidAndIosExtraInfoPush(title, content, registrionIdList, pushMessage,driver.getId()+"",orderId,message.getMsgID());
 			}
 			return Action.CommitMessage;
 		}catch(Exception e){
