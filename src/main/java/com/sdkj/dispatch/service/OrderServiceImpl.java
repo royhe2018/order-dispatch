@@ -33,7 +33,7 @@ public class OrderServiceImpl {
 		validStatusList.add(5);
 		validStatusList.add(6);
 		validStatusList.add(8);
-		validStatusList.add(9);
+		//validStatusList.add(9);
 		Map<String,Object> param=new HashMap<String,Object>();
 		param.put("driverId",userId );
 		param.put("cancleStatus", 0);
