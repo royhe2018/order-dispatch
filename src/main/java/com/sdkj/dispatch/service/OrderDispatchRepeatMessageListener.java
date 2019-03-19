@@ -78,11 +78,11 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
     		param.put("orderId", orderId);
     		param.put("messageType", Constant.MQ_TAG_DISPATCH_ORDER);
 			List<NoticeRecord> noticeList = noticeRecordServiceImpl.findNoticeRecord(param);
-			String sendedUsers = "";
+			String sendedUsers = ";";
 			for(NoticeRecord record:noticeList) {
 				sendedUsers +=record.getNoticeUserIds();
 			}
- 
+			logger.info("orderId:"+orderId+";sendedUsers111:"+sendedUsers);
     		List<String> registrionIdListForDriver1=new ArrayList<String>();
     		List<String> registrionIdListForDriver2=new ArrayList<String>();
     		List<String> registrionIdListForDriver3=new ArrayList<String>();
@@ -95,7 +95,8 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
     				param.clear();
     				param.put("id", item.getUserId());
     				User driverUser = userMapper.findSingleUser(param);
-    				if(sendedUsers.indexOf(driverUser.getId()+",")==-1){
+    				if(sendedUsers.indexOf(";"+driverUser.getId()+";")==-1){
+    					logger.info("sendedUsers:"+sendedUsers+"-- not contain:"+"';"+driverUser.getId()+";'");
     					if(pushComponent.isDriverOnline(driverUser.getRegistrionId())) {
         					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is online");
         					if(!orderServiceImpl.isDriverHasOrderRunning(driverUser.getId())){
