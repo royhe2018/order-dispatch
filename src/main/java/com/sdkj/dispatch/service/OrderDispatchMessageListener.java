@@ -88,6 +88,7 @@ public class OrderDispatchMessageListener implements MessageListener{
         		param.put("driverType", driverType);
         		param.put("onDutyStatus", 2);
         		param.put("registerCity", order.getCityName());
+        		param.put("vehicleTypeId", order.getVehicleTypeId());
         		logger.info("param:"+JsonUtil.convertObjectToJsonStr(param));
         		List<DriverInfo> driverList = driverInfoMapper.findDriverInfoList(param);
         		List<String> registrionIdList=new ArrayList<String>();
@@ -97,17 +98,18 @@ public class OrderDispatchMessageListener implements MessageListener{
         				param.clear();
         				param.put("id", item.getUserId());
         				User driverUser = userMapper.findSingleUser(param);
-        				if(pushComponent.isDriverOnline(driverUser.getRegistrionId())) {
-        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is online");
-        					if(!orderServiceImpl.isDriverHasOrderRunning(driverUser.getId())){
-        						notifyUserIds +=driverUser.getId()+";";
-            					registrionIdList.add(driverUser.getRegistrionId());
-        					}else{
-        						logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" have order running");
-        					}
-        				}else{
-        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is not online");
-        				}
+//        				if(pushComponent.isDriverOnline(driverUser.getRegistrionId())) {
+//        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is online");
+//        					
+//        				}else{
+//        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is not online");
+//        				}
+        				if(!orderServiceImpl.isDriverHasOrderRunning(driverUser.getId())){
+    						notifyUserIds +=driverUser.getId()+";";
+        					registrionIdList.add(driverUser.getRegistrionId());
+    					}else{
+    						logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" have order running");
+    					}
         			}
         			if(registrionIdList.size()>0){
         				param.clear();

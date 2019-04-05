@@ -71,6 +71,7 @@ public class OrderDispatchRepeatMessageListener implements MessageListener{
     		param.put("status", 2);
     		param.put("onDutyStatus", 2);
     		param.put("registerCity", order.getCityName());
+    		param.put("vehicleTypeId", order.getVehicleTypeId());
     		logger.info("param:"+JsonUtil.convertObjectToJsonStr(param));
     		List<DriverInfo> driverList = driverInfoMapper.findDriverInfoList(param);
     		

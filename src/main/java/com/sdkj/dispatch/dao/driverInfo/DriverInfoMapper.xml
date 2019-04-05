@@ -35,6 +35,7 @@
    		<if test="driverType != null">and driver_type = #{driverType}</if>
    		<if test="onDutyStatus != null">and on_duty_status = #{onDutyStatus}</if>
    		<if test="registerCity != null">and register_city = #{registerCity}</if>
+   		<if test="vehicleTypeId != null">and vehicle_type_id = #{vehicleTypeId}</if>
    	</trim>
   </select>
   
