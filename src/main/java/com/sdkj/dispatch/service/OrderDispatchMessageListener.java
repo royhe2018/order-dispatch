@@ -115,6 +115,7 @@ public class OrderDispatchMessageListener implements MessageListener{
         				param.clear();
         				param.put("orderId", orderId);
         				List<OrderRoutePoint> routePointList = orderRoutePointMapper.findRoutePointList(param);
+        				String content = "";
         				if(order!=null && routePointList!=null){
         					OrderRoutePoint startPoint = routePointList.get(0);
         					OrderRoutePoint endPoint = routePointList.get(routePointList.size() - 1);
@@ -126,8 +127,9 @@ public class OrderDispatchMessageListener implements MessageListener{
         					pushMessage.addMessage("serviceLevel", order.getServiceVehicleLevelId()+"");
         					pushMessage.addMessage("broadcastContent", broadcastContent);
         					pushMessage.addMessage("totalFee", totalDriverFee);
+        					content ="￥:"+totalDriverFee+"元;从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName();
         				}
-                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", "请及时接单", registrionIdList, pushMessage,notifyUserIds,orderId,message.getMsgID());
+                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", content, registrionIdList, pushMessage,notifyUserIds,orderId,message.getMsgID());
         				Thread.sleep(2000);
         			}else{
         				logger.info("orderId:"+orderId+" driver is busy");
