@@ -2,15 +2,16 @@ package com.sdkj.dispatch.util;
 
 import java.util.List;
 
+import com.google.gson.JsonObject;
+
 import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
-
-import com.google.gson.JsonObject;
 
 public class JPushPayloadUtil {
     public static PushPayload buildPushObjectWithExtra(String title,String content,List<String> registrationIdList,String extraInfo) {
@@ -35,11 +36,33 @@ public class JPushPayloadUtil {
                          .setMsgContent(content)
                          .setTitle(title)
                          .addExtra("extra",extraInfo)
-                         .build())       
+                         .build())   
+                 .setOptions(Options.newBuilder()
+		                 .setApnsProduction(true)
+		                 .build())
                 .build();
         
         
         
+        return payload;
+    }
+    
+    public static PushPayload buildPushObjectWithExtraForIOSDev(String title,String content,List<String> registrationIdList,String extraInfo) {
+    	PushPayload payload = PushPayload.newBuilder()
+                .setPlatform(Platform.ios())
+                .setAudience(Audience.registrationId(registrationIdList))
+                .setNotification(Notification.newBuilder()
+                        .setAlert(content)
+                        .addPlatformNotification(IosNotification.newBuilder()
+                                .incrBadge(1)
+                                .addExtra("extra", extraInfo).build())
+                        .build())
+                 .setMessage(Message.newBuilder()
+                         .setMsgContent(content)
+                         .setTitle(title)
+                         .addExtra("extra",extraInfo)
+                         .build())
+                .build();
         return payload;
     }
     
@@ -65,14 +88,32 @@ public class JPushPayloadUtil {
                          .setMsgContent(content)
                          .setTitle(title)
                          .addExtra("extra",extraInfo)
-                         .build())       
+                         .build())
+                 .setOptions(Options.newBuilder()
+		                 .setApnsProduction(true)
+		                 .build())
                 .build();
-        
-        
-        
         return payload;
     }
     
+    public static PushPayload buildPushObjectWithExtraForDriverIOSDev(String title,String content,List<String> registrationIdList,String extraInfo) {
+    	PushPayload payload = PushPayload.newBuilder()
+                .setPlatform(Platform.android_ios())
+                .setAudience(Audience.registrationId(registrationIdList))
+                .setNotification(Notification.newBuilder()
+                        .setAlert(content)
+                        .addPlatformNotification(IosNotification.newBuilder()
+                                .incrBadge(1)
+                                .addExtra("extra", extraInfo).build())
+                        .build())
+                 .setMessage(Message.newBuilder()
+                         .setMsgContent(content)
+                         .setTitle(title)
+                         .addExtra("extra",extraInfo)
+                         .build()) 
+                .build();
+        return payload;
+    }
     
     public static PushPayload buildPushObjectSelfDefineMessageWithExtras(List<String> registrationIdList,String extraInfo) {
         return PushPayload.newBuilder()
@@ -82,6 +123,9 @@ public class JPushPayloadUtil {
                         .setMsgContent("self define message")
                         .addExtra("extra",extraInfo)
                         .build())
+                .setOptions(Options.newBuilder()
+		                 .setApnsProduction(true)
+		                 .build())
                 .build();
     }
 }
