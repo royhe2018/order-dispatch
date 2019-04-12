@@ -62,6 +62,9 @@ public class JPushPayloadUtil {
                          .setTitle(title)
                          .addExtra("extra",extraInfo)
                          .build())
+                 .setOptions(Options.newBuilder()
+		                 .setApnsProduction(false)
+		                 .build())
                 .build();
         return payload;
     }
@@ -98,7 +101,7 @@ public class JPushPayloadUtil {
     
     public static PushPayload buildPushObjectWithExtraForDriverIOSDev(String title,String content,List<String> registrationIdList,String extraInfo) {
     	PushPayload payload = PushPayload.newBuilder()
-                .setPlatform(Platform.android_ios())
+                .setPlatform(Platform.ios())
                 .setAudience(Audience.registrationId(registrationIdList))
                 .setNotification(Notification.newBuilder()
                         .setAlert(content)
@@ -111,6 +114,9 @@ public class JPushPayloadUtil {
                          .setTitle(title)
                          .addExtra("extra",extraInfo)
                          .build()) 
+                 .setOptions(Options.newBuilder()
+		                 .setApnsProduction(false)
+		                 .build())
                 .build();
         return payload;
     }
