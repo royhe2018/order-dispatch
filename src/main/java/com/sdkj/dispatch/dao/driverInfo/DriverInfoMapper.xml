@@ -36,6 +36,11 @@
    		<if test="onDutyStatus != null">and on_duty_status = #{onDutyStatus}</if>
    		<if test="registerCity != null">and register_city = #{registerCity}</if>
    		<if test="vehicleTypeId != null">and vehicle_type_id = #{vehicleTypeId}</if>
+   		<if test="vehicleTypeIdList != null"> and vehicle_type_id in
+   			<foreach collection="vehicleTypeIdList" open="(" close=")" item="vehicleTypeId" separator=",">
+    			#{vehicleTypeId}
+    		</foreach>
+   		</if>
    	</trim>
   </select>
   

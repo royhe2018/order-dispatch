@@ -1,5 +1,6 @@
 package com.sdkj.dispatch.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,17 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.sdkj.dispatch.domain.po.NoticeRecord;
-import com.sdkj.dispatch.domain.vo.PushMessage;
-import com.sdkj.dispatch.util.Constant;
-import com.sdkj.dispatch.util.DateUtilLH;
-import com.sdkj.dispatch.util.JPushPayloadUtil;
-import com.sdkj.dispatch.util.JsonUtil;
-
 import cn.jpush.api.JPushClient;
 import cn.jpush.api.device.OnlineStatus;
 import cn.jpush.api.push.PushResult;
 import cn.jpush.api.push.model.PushPayload;
+
+import com.sdkj.dispatch.domain.po.NoticeRecord;
+import com.sdkj.dispatch.domain.vo.PushMessage;
+import com.sdkj.dispatch.util.DateUtilLH;
+import com.sdkj.dispatch.util.JPushPayloadUtil;
+import com.sdkj.dispatch.util.JsonUtil;
 
 @Component
 public class JPushComponent {
@@ -39,6 +39,8 @@ public class JPushComponent {
 	private String customerMasterSecret;
 	private static JPushClient customerJpushClient;
 	
+	@Value("${jpush.ios.dev.registerid}")
+	private String iosDevRegisterIds;
 	@Autowired
 	private NoticeRecordServiceImpl noticeRecordServiceImpl;
 	
@@ -52,15 +54,29 @@ public class JPushComponent {
 	
 	public void sentAndroidAndIosExtraInfoPush(String title,String content,List<String> registrionIdList,PushMessage pushMessage,String notifyUserIds,String orderId,String queMessageId){
 		try{
+			logger.info("before remove registrionIdList is:"+JsonUtil.convertObjectToJsonStr(registrionIdList));
 			String extraInfo = pushMessage.toString();
+			String[] iosDevRegisterIdArr = iosDevRegisterIds.split(",");
+			List<String> iosDevRegisterIdList = new ArrayList<String>();
+			for(String iosDevRegisterId:iosDevRegisterIdArr){
+				if(registrionIdList.contains(iosDevRegisterId)){
+					registrionIdList.remove(iosDevRegisterId);
+					iosDevRegisterIdList.add(iosDevRegisterId);
+				}
+			}
 			logger.info("extraInfo is:"+extraInfo);
 			logger.info("registrionIdList is:"+JsonUtil.convertObjectToJsonStr(registrionIdList));
 			PushPayload pushPayload = JPushPayloadUtil.buildPushObjectWithExtraForDriver(title, content, registrionIdList, extraInfo);
 			PushResult result =jpushClient.sendPush(pushPayload);
-			
-			PushPayload pushPayloadIOSDev = JPushPayloadUtil.buildPushObjectWithExtraForDriverIOSDev(title, content, registrionIdList, extraInfo);
-			PushResult resultIOSDev =jpushClient.sendPush(pushPayloadIOSDev);
-			
+			try{
+				if(iosDevRegisterIdList.size()>0){
+					logger.info("iosDevRegisterIdList:"+JsonUtil.convertObjectToJsonStr(iosDevRegisterIdList));
+					PushPayload pushPayloadIOSDev = JPushPayloadUtil.buildPushObjectWithExtraForDriverIOSDev(title, content, iosDevRegisterIdList, extraInfo);
+					PushResult resultIOSDev =jpushClient.sendPush(pushPayloadIOSDev);
+				}
+			}catch(Exception e){
+				logger.error("推送开者异常");
+			}
 			//jpushClient.sendPush(pushPayload);
 			logger.info("message is"+result.msg_id+":");
 			if(result.error!=null){
@@ -87,14 +103,29 @@ public class JPushComponent {
 	
 	public void sentAndroidAndIosExtraInfoPushForCustomer(String title,String content,List<String> registrionIdList,PushMessage pushMessage,String notifyUserIds,String orderId,String queMessageId){
 		try{
+			String[] iosDevRegisterIdArr = iosDevRegisterIds.split(",");
+			List<String> iosDevRegisterIdList = new ArrayList<String>();
+			for(String iosDevRegisterId:iosDevRegisterIdArr){
+				if(registrionIdList.contains(iosDevRegisterId)){
+					registrionIdList.remove(iosDevRegisterId);
+					iosDevRegisterIdList.add(iosDevRegisterId);
+				}
+			}
 			String extraInfo = pushMessage.toString();
 			logger.info("extraInfo is:"+extraInfo);
 			logger.info("registrionIdList is:"+JsonUtil.convertObjectToJsonStr(registrionIdList));
 			PushPayload pushPayload = JPushPayloadUtil.buildPushObjectWithExtra(title, content, registrionIdList, extraInfo);
 			PushResult result =customerJpushClient.sendPush(pushPayload);
+			try{
+				if(iosDevRegisterIdList.size()>0){
+					logger.info("iosDevRegisterIdList:"+JsonUtil.convertObjectToJsonStr(iosDevRegisterIdList));
+					PushPayload pushPayloadIOSDev = JPushPayloadUtil.buildPushObjectWithExtraForIOSDev(title, content, iosDevRegisterIdList, extraInfo);
+					PushResult resultIOSDev  =customerJpushClient.sendPush(pushPayloadIOSDev);
+				}
+			}catch(Exception e){
+				logger.error("推送客户端开发者异常");
+			}
 			
-			PushPayload pushPayloadIOSDev = JPushPayloadUtil.buildPushObjectWithExtraForIOSDev(title, content, registrionIdList, extraInfo);
-			PushResult resultIOSDev  =customerJpushClient.sendPush(pushPayloadIOSDev);
 			logger.info("message is"+result.msg_id+":");
 			if(result.error!=null){
 				logger.info("error info:"+result.error.getMessage());

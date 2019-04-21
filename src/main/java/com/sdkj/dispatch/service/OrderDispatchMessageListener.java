@@ -88,7 +88,25 @@ public class OrderDispatchMessageListener implements MessageListener{
         		param.put("driverType", driverType);
         		param.put("onDutyStatus", 2);
         		param.put("registerCity", order.getCityName());
-        		param.put("vehicleTypeId", order.getVehicleTypeId());
+        		List<Integer> vehicleTypeIdList = new ArrayList<Integer>();
+        		if(order.getVehicleTypeId().intValue()==5){
+        			param.put("vehicleTypeId", order.getVehicleTypeId());
+        		}else if(order.getVehicleTypeId().intValue()==6){
+        			vehicleTypeIdList.add(5);
+        			vehicleTypeIdList.add(6);
+        			vehicleTypeIdList.add(7);
+        			vehicleTypeIdList.add(8);
+        		}else if(order.getVehicleTypeId().intValue()==7){
+        			vehicleTypeIdList.add(5);
+        			vehicleTypeIdList.add(7);
+        			vehicleTypeIdList.add(8);
+        		}else if(order.getVehicleTypeId().intValue()==8){
+        			vehicleTypeIdList.add(5);
+        			vehicleTypeIdList.add(8);
+        		}
+        		if(vehicleTypeIdList.size()>0){
+        			param.put("vehicleTypeIdList", vehicleTypeIdList);
+        		}
         		logger.info("param:"+JsonUtil.convertObjectToJsonStr(param));
         		List<DriverInfo> driverList = driverInfoMapper.findDriverInfoList(param);
         		List<String> registrionIdList=new ArrayList<String>();
@@ -98,12 +116,6 @@ public class OrderDispatchMessageListener implements MessageListener{
         				param.clear();
         				param.put("id", item.getUserId());
         				User driverUser = userMapper.findSingleUser(param);
-//        				if(pushComponent.isDriverOnline(driverUser.getRegistrionId())) {
-//        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is online");
-//        					
-//        				}else{
-//        					logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" is not online");
-//        				}
         				if(!orderServiceImpl.isDriverHasOrderRunning(driverUser.getId())){
     						notifyUserIds +=driverUser.getId()+";";
         					registrionIdList.add(driverUser.getRegistrionId());
@@ -130,7 +142,7 @@ public class OrderDispatchMessageListener implements MessageListener{
         					content ="￥:"+totalDriverFee+"元;从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName();
         				}
                 		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", content, registrionIdList, pushMessage,notifyUserIds,orderId,message.getMsgID());
-        				Thread.sleep(2000);
+        				//Thread.sleep(2000);
         			}else{
         				logger.info("orderId:"+orderId+" driver is busy");
         			}
