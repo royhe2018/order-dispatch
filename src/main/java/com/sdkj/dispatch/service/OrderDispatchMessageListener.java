@@ -20,14 +20,14 @@ import com.sdkj.dispatch.dao.driverInfo.DriverInfoMapper;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
 import com.sdkj.dispatch.dao.user.UserMapper;
+import com.sdkj.dispatch.dao.vehicleTypeInfo.VehicleTypeInfoMapper;
 import com.sdkj.dispatch.domain.po.DriverInfo;
-import com.sdkj.dispatch.domain.po.NoticeRecord;
 import com.sdkj.dispatch.domain.po.OrderInfo;
 import com.sdkj.dispatch.domain.po.OrderRoutePoint;
 import com.sdkj.dispatch.domain.po.User;
+import com.sdkj.dispatch.domain.po.VehicleTypeInfo;
 import com.sdkj.dispatch.domain.vo.PushMessage;
 import com.sdkj.dispatch.util.Constant;
-import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JsonUtil;
 
 @Component(Constant.MQ_TAG_DISPATCH_ORDER)
@@ -55,6 +55,9 @@ public class OrderDispatchMessageListener implements MessageListener{
 	private NoticeRecordServiceImpl noticeRecordServiceImpl;
 	
 	@Autowired
+	private VehicleTypeInfoMapper vehicleTypeInfoMapper;
+	
+	@Autowired
 	private OrderServiceImpl orderServiceImpl;
 	
 	Logger logger = LoggerFactory.getLogger(OrderDispatchMessageListener.class);
@@ -80,7 +83,9 @@ public class OrderDispatchMessageListener implements MessageListener{
 			param.clear();
 			param.put("id", orderId);
 			OrderInfo order = orderInfoMapper.findSingleOrder(param);
-			
+			param.clear();
+			param.put("id", order.getVehicleTypeId());
+			VehicleTypeInfo vehicleTypeInfo = vehicleTypeInfoMapper.findSingleVehicleTypeInfo(param);
     		for(int driverType=1;driverType<4;driverType++) {
     			String notifyUserIds = "";
     			param.clear();
@@ -140,8 +145,9 @@ public class OrderDispatchMessageListener implements MessageListener{
         					pushMessage.addMessage("broadcastContent", broadcastContent);
         					pushMessage.addMessage("totalFee", totalDriverFee);
         					content ="￥:"+totalDriverFee+"元;从"+startPoint.getPlaceName()+"至"+endPoint.getPlaceName();
+        					pushMessage.addMessage("orderVehicleType", vehicleTypeInfo.getTypeName());
+        					pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", content, registrionIdList, pushMessage,notifyUserIds,orderId,message.getMsgID());
         				}
-                		pushComponent.sentAndroidAndIosExtraInfoPush("您有新订单", content, registrionIdList, pushMessage,notifyUserIds,orderId,message.getMsgID());
         				//Thread.sleep(2000);
         			}else{
         				logger.info("orderId:"+orderId+" driver is busy");

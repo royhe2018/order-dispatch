@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sdkj.dispatch.dao.vehicleTypeInfo.VehicleTypeInfoMapper">
+  <resultMap id="BaseResultMap" type="com.sdkj.dispatch.domain.po.VehicleTypeInfo">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="type_name" jdbcType="VARCHAR" property="typeName" />
+    <result column="length" jdbcType="REAL" property="length" />
+    <result column="width" jdbcType="REAL" property="width" />
+    <result column="height" jdbcType="REAL" property="height" />
+    <result column="carrying_capacity" jdbcType="REAL" property="carryingCapacity" />
+    <result column="volume" jdbcType="REAL" property="volume" />
+    <result column="image" jdbcType="VARCHAR" property="image" />
+  </resultMap>
+ 
+  <select id="findSingleVehicleTypeInfo" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select *
+    from sdlh_vehicle_type_info
+    <trim prefix="where" prefixOverrides="and">
+    	<if test="id != null"> and id = #{id}</if>
+    </trim>
+  </select>
+  <select id="findVehicleTypeInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select *
+    from sdlh_vehicle_type_info
+    <trim prefix="where" prefixOverrides="and">
+    	<if test="id != null"> and id = #{id}</if>
+    	<if test="displayFlag != null"> and display_flag = #{displayFlag}</if>
+    </trim>
+    order by order_num asc
+  </select>
+</mapper>
