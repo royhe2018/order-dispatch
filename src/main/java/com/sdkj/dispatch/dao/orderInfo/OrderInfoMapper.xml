@@ -34,6 +34,7 @@
 		<result column="sign_receive_time" property="signReceiveTime" />
 		<result column="total_distance" property="totalDistance" />
 		<result column="city_name" property="cityName" />
+		<result column="use_time_type" property="useTimeType" />
 	</resultMap>
 
 	<select id="findSingleOrder" parameterType="java.util.Map"

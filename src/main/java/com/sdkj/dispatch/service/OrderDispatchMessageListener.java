@@ -141,6 +141,8 @@ public class OrderDispatchMessageListener implements MessageListener{
         					if(order.getServiceVehicleLevelId()!=null && order.getServiceVehicleLevelId().intValue()==2){
         						broadcastContent = "返程车,"+broadcastContent;
         					}
+        					
+        					pushMessage.addMessage("useTimeType", order.getUseTimeType());
         					pushMessage.addMessage("serviceLevel", order.getServiceVehicleLevelId()+"");
         					pushMessage.addMessage("broadcastContent", broadcastContent);
         					pushMessage.addMessage("totalFee", totalDriverFee);

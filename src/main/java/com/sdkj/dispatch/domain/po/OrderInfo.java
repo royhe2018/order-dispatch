@@ -61,6 +61,8 @@ public class OrderInfo {
     
     private String cityName;
     
+    private String useTimeType;
+    
     public Long getId() {
         return id;
     }
@@ -299,6 +301,14 @@ public class OrderInfo {
 
 	public void setCityName(String cityName) {
 		this.cityName = cityName;
+	}
+
+	public String getUseTimeType() {
+		return useTimeType;
+	}
+
+	public void setUseTimeType(String useTimeType) {
+		this.useTimeType = useTimeType;
 	}
 	
 }
