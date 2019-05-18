@@ -16,6 +16,7 @@ import com.aliyun.openservices.ons.api.ConsumeContext;
 import com.aliyun.openservices.ons.api.Message;
 import com.aliyun.openservices.ons.api.MessageListener;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.pagehelper.StringUtil;
 import com.sdkj.dispatch.dao.driverInfo.DriverInfoMapper;
 import com.sdkj.dispatch.dao.orderInfo.OrderInfoMapper;
 import com.sdkj.dispatch.dao.orderRoutePoint.OrderRoutePointMapper;
@@ -122,8 +123,10 @@ public class OrderDispatchMessageListener implements MessageListener{
         				param.put("id", item.getUserId());
         				User driverUser = userMapper.findSingleUser(param);
         				if(!orderServiceImpl.isDriverHasOrderRunning(driverUser.getId())){
-    						notifyUserIds +=driverUser.getId()+";";
-        					registrionIdList.add(driverUser.getRegistrionId());
+        					if(StringUtil.isNotEmpty(driverUser.getRegistrionId())) {
+        						notifyUserIds +=driverUser.getId()+";";
+            					registrionIdList.add(driverUser.getRegistrionId());
+        					}
     					}else{
     						logger.info(driverUser.getNickName()+" : "+driverUser.getAccount()+" have order running");
     					}
