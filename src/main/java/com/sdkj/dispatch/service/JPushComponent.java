@@ -21,6 +21,7 @@ import com.sdkj.dispatch.util.DateUtilLH;
 import com.sdkj.dispatch.util.JPushPayloadUtil;
 import com.sdkj.dispatch.util.JsonUtil;
 
+import cn.jiguang.common.utils.StringUtils;
 import cn.jpush.api.JPushClient;
 import cn.jpush.api.device.OnlineStatus;
 import cn.jpush.api.push.PushResult;
@@ -61,6 +62,13 @@ public class JPushComponent {
 	
 	public void sentAndroidAndIosExtraInfoPush(String title,String content,List<String> registrionIdList,PushMessage pushMessage,String notifyUserIds,String orderId,String queMessageId){
 		try{
+			List<String> ectiveNullRegisterIdList = new ArrayList<String>();
+			for(String item:registrionIdList){
+				if(StringUtils.isNotEmpty(item)){
+					ectiveNullRegisterIdList.add(item);
+				}
+			}
+			registrionIdList = ectiveNullRegisterIdList;
 			logger.info("before remove registrionIdList is:"+JsonUtil.convertObjectToJsonStr(registrionIdList));
 			String extraInfo = pushMessage.toString();
 			String[] iosDevRegisterIdArr = findDevUserRegisterIds();
@@ -105,7 +113,9 @@ public class JPushComponent {
 			target.setMessageType(pushMessage.getMessageType());
 			target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
 			target.setNoticeUserIds(notifyUserIds);
-			target.setOrderId(Integer.valueOf(orderId));
+			if(StringUtils.isNotEmpty(orderId)){
+				target.setOrderId(Integer.valueOf(orderId));
+			}
 			target.setMessageId(queMessageId);
 			target.setCreateTime(DateUtilLH.getCurrentTime());
 			target.setJpushMessageId(result.msg_id+"");
@@ -118,6 +128,15 @@ public class JPushComponent {
 	
 	public void sentAndroidAndIosExtraInfoPushForCustomer(String title,String content,List<String> registrionIdList,PushMessage pushMessage,String notifyUserIds,String orderId,String queMessageId){
 		try{
+			
+			List<String> ectiveNullRegisterIdList = new ArrayList<String>();
+			for(String item:registrionIdList){
+				if(StringUtils.isNotEmpty(item)){
+					ectiveNullRegisterIdList.add(item);
+				}
+			}
+			registrionIdList = ectiveNullRegisterIdList;
+			
 			String[] iosDevRegisterIdArr = findDevUserRegisterIds();
 			List<String> iosDevRegisterIdList = new ArrayList<String>();
 			if(iosDevRegisterIdArr!=null && iosDevRegisterIdArr.length>0){
@@ -161,7 +180,9 @@ public class JPushComponent {
 			target.setMessageType(pushMessage.getMessageType());
 			target.setNoticeRegisterIds(JsonUtil.convertObjectToJsonStr(registrionIdList));
 			target.setNoticeUserIds(notifyUserIds);
-			target.setOrderId(Integer.valueOf(orderId));
+			if(StringUtils.isNotEmpty(orderId)){
+				target.setOrderId(Integer.valueOf(orderId));
+			}
 			target.setMessageId(queMessageId);
 			target.setCreateTime(DateUtilLH.getCurrentTime());
 			target.setJpushMessageId(result.msg_id+"");

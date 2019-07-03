@@ -2,12 +2,12 @@
 <configuration scan="true" scanPeriod="30 seconds">
 	<property name="LOG_PATH" value="F:\\" />
 	<appender name="application" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>application-dispatch.log</file>
+        <file>application-task.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
-　　　　　　　　　　　　　　<fileNamePattern>application-dispatch.%d{yyyy-MM-dd}.log</fileNamePattern> 
+　　　　　　　　　　　　　　<fileNamePattern>application-task.%d{yyyy-MM-dd}.log</fileNamePattern> 
 　　　　　　　　　　　　　　<maxHistory>30</maxHistory> 
 　　　　     </rollingPolicy>
     </appender>
@@ -19,11 +19,11 @@
     	</encoder>
   	</appender>
 	
-	<logger name="com.sdkj.dispatch" level="INFO" additivity="false">
+	<logger name="com.sdkj.dispatch" level="ERROR" additivity="false">
 		<appender-ref ref="application" />
 		<appender-ref ref="STDOUT" />
 	</logger>
-	<root level="INFO">
+	<root level="ERROR">
 		<appender-ref ref="application" />
 		<appender-ref ref="STDOUT" />
 	</root>

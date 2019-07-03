@@ -90,7 +90,7 @@ public class OrderPaymentRemarkListener implements MessageListener{
 			User driver = userMapper.findSingleUser(queryMap);
 			if(driver!=null) {
 				String title = "您接的订单费用已入账";
-				String content = "您接的订单已完成,费用合计："+distributeFeeInfo.get("driverFee")+"请注意查验!";
+				String content = "您接的订单已支付,费用合计："+distributeFeeInfo.get("driverFee")+"请注意查验!";
 				List<String> registrionIdList = new ArrayList<String>();
 				registrionIdList.add(driver.getRegistrionId());
 				PushMessage pushMessage = new PushMessage();
@@ -109,7 +109,7 @@ public class OrderPaymentRemarkListener implements MessageListener{
 				Float money = Float.valueOf(accountMoney);
 				if(money.floatValue()>0){
 					String title = "您有新的推荐费入账";
-					String content = "您推荐人订单已完成,本次入账合计："+accountMoney+"请注意查验!";
+					String content = "您推荐人订单已支付,本次入账合计："+accountMoney+"请注意查验!";
 					List<String> registrionIdList = new ArrayList<String>();
 					registrionIdList.add(clientReferee.getRegistrionId());
 					PushMessage pushMessage = new PushMessage();
@@ -133,7 +133,7 @@ public class OrderPaymentRemarkListener implements MessageListener{
 				Float money = Float.valueOf(accountMoney);
 				if(money.floatValue()>0){
 					String title = "您有新的推荐费入账";
-					String content = "您推荐人订单已完成,本次入账合计："+accountMoney+"请注意查验!";
+					String content = "您推荐人订单已支付,本次入账合计："+accountMoney+"请注意查验!";
 					List<String> registrionIdList = new ArrayList<String>();
 					registrionIdList.add(driverReferee.getRegistrionId());
 					PushMessage pushMessage = new PushMessage();
