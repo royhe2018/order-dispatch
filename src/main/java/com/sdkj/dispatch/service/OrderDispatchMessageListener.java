@@ -96,21 +96,37 @@ public class OrderDispatchMessageListener implements MessageListener{
         		param.put("registerCity", order.getCityName());
         		List<Integer> vehicleTypeIdList = new ArrayList<Integer>();
         		if(order.getVehicleTypeId().intValue()==5){
-        			param.put("vehicleTypeId", order.getVehicleTypeId());
+        			vehicleTypeIdList.add(5);
+        			vehicleTypeIdList.add(9);
+        			vehicleTypeIdList.add(10);
         		}else if(order.getVehicleTypeId().intValue()==6){
         			vehicleTypeIdList.add(5);
         			vehicleTypeIdList.add(6);
         			vehicleTypeIdList.add(7);
         			vehicleTypeIdList.add(8);
+        			vehicleTypeIdList.add(9);
+        			vehicleTypeIdList.add(10);
         		}else if(order.getVehicleTypeId().intValue()==7){
         			vehicleTypeIdList.add(5);
         			vehicleTypeIdList.add(7);
         			vehicleTypeIdList.add(8);
+        			vehicleTypeIdList.add(9);
+        			vehicleTypeIdList.add(10);
         		}else if(order.getVehicleTypeId().intValue()==8){
         			vehicleTypeIdList.add(5);
         			vehicleTypeIdList.add(8);
+        			vehicleTypeIdList.add(9);
+        			vehicleTypeIdList.add(10);
+        		}else if(order.getVehicleTypeId().intValue()==9){
+        			vehicleTypeIdList.add(9);
+        		}else if(order.getVehicleTypeId().intValue()==10){
+        			vehicleTypeIdList.add(10);
         		}
         		if(vehicleTypeIdList.size()>0){
+        			param.put("vehicleTypeIdList", vehicleTypeIdList);
+        		}else{
+        			vehicleTypeIdList.add(9);
+        			vehicleTypeIdList.add(10);
         			param.put("vehicleTypeIdList", vehicleTypeIdList);
         		}
         		logger.info("param:"+JsonUtil.convertObjectToJsonStr(param));
