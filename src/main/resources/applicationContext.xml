@@ -62,6 +62,7 @@
 	   	value="20" />
 	  	<!-- 这里配置提交方式，默认就是TRUE，可以不用配置 -->
 	  	<property name="defaultAutoCommit" value="false" />
+	  	<property name="validationQuery" value="SELECT 1" />
     </bean>
  
      <!-- Bean注解: 注入Service -->

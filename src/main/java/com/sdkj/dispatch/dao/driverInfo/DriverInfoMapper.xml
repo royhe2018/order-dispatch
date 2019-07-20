@@ -26,21 +26,27 @@
    	</trim>
   </select>
   <select id="findDriverInfoList" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select *
-    from sdlh_driver_info
+    select d.*
+    from sdlh_driver_info d
+    inner join sdlh_user u on d.user_id = u.id
    	<trim prefix="where" prefixOverrides="and">
-   		<if test="id != null">and id = #{id}</if>
-   		<if test="userId != null">and user_id = #{userId}</if>
-   		<if test="status != null">and status = #{status}</if>
-   		<if test="driverType != null">and driver_type = #{driverType}</if>
-   		<if test="onDutyStatus != null">and on_duty_status = #{onDutyStatus}</if>
-   		<if test="registerCity != null">and register_city = #{registerCity}</if>
-   		<if test="vehicleTypeId != null">and vehicle_type_id = #{vehicleTypeId}</if>
-   		<if test="vehicleTypeIdList != null"> and vehicle_type_id in
+   		<if test="id != null">and d.id = #{id}</if>
+   		<if test="userId != null">and d.user_id = #{userId}</if>
+   		<if test="status != null">and d.status = #{status}</if>
+   		<if test="driverType != null">and d.driver_type = #{driverType}</if>
+   		<if test="onDutyStatus != null">and d.on_duty_status = #{onDutyStatus}</if>
+   		<if test="registerCity != null">and d.register_city = #{registerCity}</if>
+   		<if test="vehicleTypeId != null">and d.vehicle_type_id = #{vehicleTypeId}</if>
+   		<if test="vehicleTypeIdList != null"> and d.vehicle_type_id in
    			<foreach collection="vehicleTypeIdList" open="(" close=")" item="vehicleTypeId" separator=",">
     			#{vehicleTypeId}
     		</foreach>
    		</if>
+   		<if test="mapTerminalIdList != null"> and u.map_terminal_id in
+			<foreach collection="mapTerminalIdList" item="item" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
    	</trim>
   </select>
   

@@ -85,6 +85,7 @@
 			<if test="driverId != null"> and driver_id = #{driverId}</if>
 			<if test="cancleStatus != null"> and cancle_status = #{cancleStatus}</if>
 			<if test="status != null"> and status = #{status}</if>
+			<if test="vehicleTypeId != null"> and vehicle_type_id = #{vehicleTypeId}</if>
 			<if test="validStatusList != null"> and status in
 				<foreach collection="validStatusList" item="item" open="(" separator="," close=")">
 					#{item}
@@ -219,6 +220,9 @@
 			</if>
 			<if test="receiveUserId != null">
 				receive_user_id = #{receiveUserId},
+			</if>
+			<if test="dispatchTime != null">
+				dispatch_time = #{dispatchTime},
 			</if>
 			data_version = #{dataVersion,jdbcType=INTEGER}+1,
 		</set>
